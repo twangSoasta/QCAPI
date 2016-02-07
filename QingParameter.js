@@ -26,7 +26,7 @@ var day = date.getDate()<10 ? "0"+date.getDate():date.getDate();
 var timestamp = date.getFullYear()+"-"+ month +"-"+day+"T"+date.getHours()
                 +":"+date.getMinutes()+":"+date.getSeconds()+"Z";
 
-//myParameter.time_stamp = timestamp;				
+myParameter.time_stamp = timestamp;				
 //sort based on the name of myParameter
 var myParr =[];         // myParr is the array of objects of both the name and value
 var arr = [];           // arr is the array for the name
@@ -55,7 +55,7 @@ console.log(message);
 //var testmessage = "GET\n/iaas/\naccess_key_id=QYACCESSKEYIDEXAMPLE&action=RunInstances&count=1&image_id=centos64x86a&instance_name=demo&instance_type=small_b&login_mode=passwd&login_passwd=QingCloud20130712&signature_method=HmacSHA256&signature_version=1&time_stamp=2013-08-27T14%3A30%3A10Z&version=1&vxnets.1=vxnet-0&zone=pek1";
 //console.log(testmessage);
 const crypto = require('crypto');
-const secret = "SECRETACCESSKEY";
+const secret = "dmqMcg3QOryUwfi07RfXr9tE6bpKrvJonsC9JShc";
 var hash = encodeURIComponent(crypto.createHmac('SHA256', secret).update(message).digest('base64'));
 console.log(hash+"\n");
 return myParameterSortStr + "&signature=" + hash;
