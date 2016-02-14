@@ -18,14 +18,13 @@ var myParameter = {
 };
 */
 
-function getString2Sign(myParameter,method,uri){
+function getString2Sign(myParameter,method,uri,callback){
 //get the current timestamp format
 var date = new Date();
 var month = date.getMonth()<10 ? "0"+(date.getMonth()+1):date.getMonth()+1;
 var day = date.getDate()<10 ? "0"+date.getDate():date.getDate();
 var timestamp = date.getFullYear()+"-"+ month +"-"+day+"T"+date.getHours()
                 +":"+date.getMinutes()+":"+date.getSeconds()+"Z";
-
 myParameter.time_stamp = timestamp;				
 //sort based on the name of myParameter
 var myParr =[];         // myParr is the array of objects of both the name and value
@@ -58,7 +57,8 @@ const crypto = require('crypto');
 const secret = "dmqMcg3QOryUwfi07RfXr9tE6bpKrvJonsC9JShc";
 var hash = encodeURIComponent(crypto.createHmac('SHA256', secret).update(message).digest('base64'));
 console.log(hash+"\n");
-return myParameterSortStr + "&signature=" + hash;
+var qString = myParameterSortStr + "&signature=" + hash;
+callback(qString);
 }
 
 //var finalString = getString2Sign(myParameter,"GET","/iaas/");
