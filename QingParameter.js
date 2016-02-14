@@ -1,4 +1,8 @@
+var fs = require('fs');
 var querystring = require('querystring');
+var csv = fs.readFileSync("../files/VisQingcloudAPI.csv").toString();
+var AccessString = csv.split(",")[1];
+var secret = AccessString.substring(AccessString.indexOf("'")+1,AccessString.length-1);
 /*
 var myParameter = {
     "count":1,
@@ -54,7 +58,6 @@ console.log(message);
 //var testmessage = "GET\n/iaas/\naccess_key_id=QYACCESSKEYIDEXAMPLE&action=RunInstances&count=1&image_id=centos64x86a&instance_name=demo&instance_type=small_b&login_mode=passwd&login_passwd=QingCloud20130712&signature_method=HmacSHA256&signature_version=1&time_stamp=2013-08-27T14%3A30%3A10Z&version=1&vxnets.1=vxnet-0&zone=pek1";
 //console.log(testmessage);
 const crypto = require('crypto');
-const secret = "dmqMcg3QOryUwfi07RfXr9tE6bpKrvJonsC9JShc";
 var hash = encodeURIComponent(crypto.createHmac('SHA256', secret).update(message).digest('base64'));
 console.log(hash+"\n");
 var qString = myParameterSortStr + "&signature=" + hash;

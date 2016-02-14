@@ -1,7 +1,7 @@
+const NUMEIP_INSTANCES = 5;
 var fs = require('fs');
 var querystring = require('querystring');
 var command2Qc = require('./QingcloudReq.js');
-const NUMEIP_INSTANCE = 3;
 var method = "GET";
 var uri = "/iaas/";
 var myParameterSample = {
@@ -16,19 +16,23 @@ var myParameterSample = {
 //    "instance_name":"demo",
 //    "image_id":"centos64x86a",
 //    "login_mode":"passwd",
-//    "login_passwd":"Visenergy2015",      
+//    "login_passwd":"XYZ",      
     "version":1,                             //must need 
-    "access_key_id":"VKPQBQSYDKMPGZEJXFJS",  //must need 
+    "access_key_id":access_key_id,  //must need 
     "action":"StartInstances",            //must need
 //	"action":"StopRDBs",
     "time_stamp":"2013-08-27T14:30:10Z"	     //will be substitute by the real timestamp in the call
 };
+ var csv = fs.readFileSync("../files/VisQingcloudAPI.csv").toString();
+ var keyString = csv.split(",")[0];
+ var access_key_id = keyString.substring(keyString.indexOf("'")+1,keyString.length-1);
 
+ 
 
 if (false) {
 // create instance 
 var myParameterCreate = {
-    "count":2,
+    "count":NUMEIP_INSTANCES,
 	"image_id":"img-7cqsetqo",
 	"instance_type":"c1m1",
     "zone":"pek2",
@@ -39,7 +43,7 @@ var myParameterCreate = {
     "signature_version":1,                     
     "signature_method":"HmacSHA256",              
     "version":1,                              
-    "access_key_id":"VKPQBQSYDKMPGZEJXFJS",   
+    "access_key_id":access_key_id,   
     "action":"RunInstances",            
     "time_stamp":"2013-08-27T14:30:10Z"	     
 };
@@ -51,7 +55,7 @@ command2Qc.command2Qc(myParameterCreate,method,uri,function(resObj){
 if (false) {
 // create EIPs 
 var myParameterCreateEip = {
-    "count":1,
+    "count":NUMEIP_INSTANCES,
 	"bandwidth":2,
 	"billing_mode":"traffic",
 	"eip_name":"twEIP",
@@ -59,7 +63,7 @@ var myParameterCreateEip = {
     "signature_version":1,                     
     "signature_method":"HmacSHA256",              
     "version":1,                              
-    "access_key_id":"VKPQBQSYDKMPGZEJXFJS",   
+    "access_key_id":access_key_id,   
     "action":"AllocateEips",            
     "time_stamp":"2013-08-27T14:30:10Z"	     
 };
@@ -75,7 +79,7 @@ var myParameterDesEip = {
     "signature_version":1,                     
     "signature_method":"HmacSHA256",              
     "version":1,                              
-    "access_key_id":"VKPQBQSYDKMPGZEJXFJS",   
+    "access_key_id":access_key_id,   
     "action":"DescribeEips",            
     "time_stamp":"2013-08-27T14:30:10Z"	     
 };
@@ -103,7 +107,7 @@ var myParameterDesIns = {
     "signature_version":1,                     
     "signature_method":"HmacSHA256",              
     "version":1,                              
-    "access_key_id":"VKPQBQSYDKMPGZEJXFJS",   
+    "access_key_id":access_key_id,   
     "action":"DescribeInstances",            
     "time_stamp":"2013-08-27T14:30:10Z"	     
 };
@@ -131,7 +135,7 @@ var myParameterAssociate = {
     "signature_version":1,                     
     "signature_method":"HmacSHA256",              
     "version":1,                              
-    "access_key_id":"VKPQBQSYDKMPGZEJXFJS",   
+    "access_key_id":access_key_id,   
     "action":"AssociateEip",            
     "time_stamp":"2013-08-27T14:30:10Z"	     
 };
@@ -162,7 +166,7 @@ var myParameterDissociate = {
     "signature_version": "1",                     
     "signature_method": "HmacSHA256",              
     "version":"1",                              
-    "access_key_id": "VKPQBQSYDKMPGZEJXFJS",   
+    "access_key_id": access_key_id,   
     "action": "DissociateEips",            
     "time_stamp": "2013-08-27T14:30:10Z"    
 };
@@ -198,7 +202,7 @@ var myParameterStart = {
     "signature_version":1,                     
     "signature_method":"HmacSHA256",              
     "version":1,                              
-    "access_key_id":"VKPQBQSYDKMPGZEJXFJS",   
+    "access_key_id":access_key_id,   
     "action":"StartInstances",            
     "time_stamp":"2013-08-27T14:30:10Z"	     
 };
@@ -217,7 +221,7 @@ command2Qc.command2Qc(myParameterStart,method,uri,function(resObj){
 });
 }
 
-if (false) {
+if (true) {
 // stop instance 
 var myParameterStop = {
     "count":1,
@@ -225,7 +229,7 @@ var myParameterStop = {
     "signature_version":1,                     
     "signature_method":"HmacSHA256",              
     "version":1,                              
-    "access_key_id":"VKPQBQSYDKMPGZEJXFJS",   
+    "access_key_id":access_key_id,   
     "action":"StopInstances",            
     "time_stamp":"2013-08-27T14:30:10Z"	     
 };
@@ -244,7 +248,7 @@ command2Qc.command2Qc(myParameterStop,method,uri,function(resObj){
 });
 }
 
-if (true) {
+if (false) {
 // restart instance 
 var myParameterRestart = {
     "count":1,
@@ -252,7 +256,7 @@ var myParameterRestart = {
     "signature_version":1,                     
     "signature_method":"HmacSHA256",              
     "version":1,                              
-    "access_key_id":"VKPQBQSYDKMPGZEJXFJS",   
+    "access_key_id":access_key_id,   
     "action":"RestartInstances",            
     "time_stamp":"2013-08-27T14:30:10Z"	     
 };
