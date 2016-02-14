@@ -1,4 +1,4 @@
-querystring = require('querystring');
+var querystring = require('querystring');
 /*
 var myParameter = {
     "count":1,
