@@ -105,7 +105,7 @@ command2Qc.command2Qc(myParameterDesEip,method,uri,function(resObj){
 });
 }
 
-if (true) {
+if (false) {
 // Describe Instances 
 var OVERWRITE_FILE = false;
 var myParameterDesIns = {
@@ -201,6 +201,40 @@ command2Qc.command2Qc(myParameterDissociate,method,uri,function(resObj){
  }
 }
 
+if (true) {
+// Delete EIPs
+var myParameterRelease = {
+    "zone": "pek2",
+    "signature_version": "1",                     
+    "signature_method": "HmacSHA256",              
+    "version":"1",                              
+    "access_key_id": access_key_id,   
+    "action": "ReleaseEips",            
+    "time_stamp": "2013-08-27T14:30:10Z"    
+};
+
+var fileEipId = fs.readFileSync('./eipid.log').toString();
+var eipId = fileEipId.split(',');
+var fileInsId = fs.readFileSync('./instanceid.log').toString();
+var insId = fileInsId.split(',');	
+
+if (eipId.length != insId.length) {
+	console.log("Error: EIP number:"+eipId.length," mismatches "+"INSTANCE number:"+insId.length);
+} else {
+	var body ="";
+	for (i=0; i< eipId.length -1;i++){
+		var newName = ("eips."+ (i+1)).toString();
+		body += "&" + newName + "=" + eipId[i].toString();  	
+	}
+var paraQuery = querystring.stringify(myParameterRelease) + body;
+myParameterRelease = querystring.parse(paraQuery);
+console.log(myParameterRelease);
+command2Qc.command2Qc(myParameterRelease,method,uri,function(resObj){
+
+        });
+ }
+}
+
 
 if (false) {
 // start instance 
@@ -252,6 +286,33 @@ myParameterStop = querystring.parse(paraQuery);
 console.log(myParameterStop);
 
 command2Qc.command2Qc(myParameterStop,method,uri,function(resObj){
+	
+});
+}
+
+if (false) {
+// delete instance 
+var myParameterDelIns = {
+    "count":1,
+    "zone":"pek2",
+    "signature_version":1,                     
+    "signature_method":"HmacSHA256",              
+    "version":1,                              
+    "access_key_id":access_key_id,   
+    "action":"TerminateInstances",            
+    "time_stamp":"2013-08-27T14:30:10Z"	     
+};
+var fileInsId = fs.readFileSync('./instanceid.log').toString();
+var insId = fileInsId.split(',');
+for (i=0; i< insId.length -1;i++){
+		var newName = ("instances."+ (i+1)).toString();
+		body += "&" + newName + "=" + insId[i].toString();  	
+	}
+var paraQuery = querystring.stringify(myParameterDelIns) + body;
+myParameterDelIns = querystring.parse(paraQuery);
+console.log(myParameterDelIns);
+
+command2Qc.command2Qc(myParameterDelIns,method,uri,function(resObj){
 	
 });
 }

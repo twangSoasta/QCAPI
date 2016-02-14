@@ -20,7 +20,7 @@ function command2Qc(myParameter,method,uri,callback){
       var req = https.request(options, (res) => {
         console.log('statusCode: ', res.statusCode);
         console.log('headers: ', res.headers);
-        console.log("*********************************************************************************");
+        console.log("********************************************************************");
       var body = "";  
       res.on('data', (d) => {
         //  process.stdout.write("stdout\n"+d+"\n");
@@ -28,7 +28,7 @@ function command2Qc(myParameter,method,uri,callback){
       });
 	  res.on('end',()=>{
 	     var dObj = JSON.parse(body);
-	     console.log(dObj);
+	//     console.log(dObj);
 	     callback(dObj);
 	    });
       });
