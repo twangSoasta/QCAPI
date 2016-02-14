@@ -1,28 +1,8 @@
 var https = require('https');
 var QingParameter = require('./QingParameter.js');
-var method = "GET";
-var uri = "/iaas/";
 
-var myParameter = {
-    "count":1,
-//    "vxnets.1":"vxnet-0",
-    "zone":"pek2",
-//    "instance_type":"c2m8",
-    "instances.1":"i-k3t0spz8",
-//	"rdbs.1":"rdb-pcq7sjea",
-    "signature_version":1,                    //must need 
-    "signature_method":"HmacSHA256",          //must need 
-//    "instance_name":"demo",
-//    "image_id":"centos64x86a",
-//    "login_mode":"passwd",
-//    "login_passwd":"Visenergy2015",      
-    "version":1,                             //must need 
-    "access_key_id":"VKPQBQSYDKMPGZEJXFJS",  //must need 
-    "action":"StartInstances",            //must need
-//	"action":"StopRDBs",
-    "time_stamp":"2013-08-27T14:30:10Z"	     //will be substitute by the real timestamp in the call
-};
 
+function command2Qc(myParameter,method,uri){
 var queryString = QingParameter.getString2Sign(myParameter,method,uri);
 console.log("query string with signature is:\n"+queryString);
 
@@ -52,3 +32,7 @@ req.end();
 req.on('error', (e) => {
   console.error(e);
 });
+}
+
+exports.command2Qc = command2Qc;
+
