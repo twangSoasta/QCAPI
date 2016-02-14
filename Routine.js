@@ -155,7 +155,7 @@ if (eipId.length != insId.length) {
  }
 }
 
-if (true) {
+if (false) {
 // Dissociate EIP with Instance 
 var myParameterDissociate = {
     "zone": "pek2",
@@ -171,27 +171,17 @@ var fileEipId = fs.readFileSync('./eipid.log').toString();
 var eipId = fileEipId.split(',');
 var fileInsId = fs.readFileSync('./instanceid.log').toString();
 var insId = fileInsId.split(',');	
-console.log(eipId + "\n" + insId);
-var nameArr = [];
-var valueArr = [];
-for (name in myParameterDissociate){
-	nameArr.push(name);
-}
-for (i=0; i<nameArr.length; i++){
-valueArr[nameArr[i]] = myParameterDissociate[nameArr[i]];
-}
-
-var paraStr = JSON.stringify(myParameterDissociate); console.log(paraStr);
 
 if (eipId.length != insId.length) {
 	console.log("Error: EIP number:"+eipId.length," mismatches "+"INSTANCE number:"+insId.length);
 } else {
+	var body ="";
 	for (i=0; i< eipId.length -1;i++){
 		var newName = ("eips."+ (i+1)).toString();
-		nameArr.push(newName);
-        valueArr[nameArr[nameArr.length-1]]= eipId[i]; 		
+		body += "&" + newName + "=" + eipId[i].toString();  	
 	}
-myParameterDissociate = querystring.parse(querystring.stringify(valueArr));
+var paraQuery = querystring.stringify(myParameterDissociate) + body;
+myParameterDissociate = querystring.parse(paraQuery);
 console.log(myParameterDissociate);
 command2Qc.command2Qc(myParameterDissociate,method,uri,function(resObj){
 
@@ -205,8 +195,6 @@ if (false) {
 var myParameterStart = {
     "count":1,
     "zone":"pek2",
-    "instances.1":"i-k3t0spz8",
-	"instances.2":"i-mkiiqn2z",
     "signature_version":1,                     
     "signature_method":"HmacSHA256",              
     "version":1,                              
@@ -214,12 +202,16 @@ var myParameterStart = {
     "action":"StartInstances",            
     "time_stamp":"2013-08-27T14:30:10Z"	     
 };
-//var instanceJson = {
-//	"instances.1":"i-k3t0spz8",
-//	"instances.2":"i-mkiiqn2z"
-//};
-//var paraObj = JSON.parse(myParameterStart);
-//var InsObj = JSON.parse(instanceJson);
+var fileInsId = fs.readFileSync('./instanceid.log').toString();
+var insId = fileInsId.split(',');
+for (i=0; i< insId.length -1;i++){
+		var newName = ("instances."+ (i+1)).toString();
+		body += "&" + newName + "=" + insId[i].toString();  	
+	}
+var paraQuery = querystring.stringify(myParameterStart) + body;
+myParameterStart = querystring.parse(paraQuery);
+console.log(myParameterStart);
+
 command2Qc.command2Qc(myParameterStart,method,uri,function(resObj){
 	
 });
@@ -230,8 +222,6 @@ if (false) {
 var myParameterStop = {
     "count":1,
     "zone":"pek2",
-    "instances.1":"i-k3t0spz8",
-	"instances.2":"i-mkiiqn2z",
     "signature_version":1,                     
     "signature_method":"HmacSHA256",              
     "version":1,                              
@@ -239,11 +229,47 @@ var myParameterStop = {
     "action":"StopInstances",            
     "time_stamp":"2013-08-27T14:30:10Z"	     
 };
+var fileInsId = fs.readFileSync('./instanceid.log').toString();
+var insId = fileInsId.split(',');
+for (i=0; i< insId.length -1;i++){
+		var newName = ("instances."+ (i+1)).toString();
+		body += "&" + newName + "=" + insId[i].toString();  	
+	}
+var paraQuery = querystring.stringify(myParameterStop) + body;
+myParameterStop = querystring.parse(paraQuery);
+console.log(myParameterStop);
+
 command2Qc.command2Qc(myParameterStop,method,uri,function(resObj){
 	
 });
 }
 
+if (true) {
+// restart instance 
+var myParameterRestart = {
+    "count":1,
+    "zone":"pek2",
+    "signature_version":1,                     
+    "signature_method":"HmacSHA256",              
+    "version":1,                              
+    "access_key_id":"VKPQBQSYDKMPGZEJXFJS",   
+    "action":"RestartInstances",            
+    "time_stamp":"2013-08-27T14:30:10Z"	     
+};
+var fileInsId = fs.readFileSync('./instanceid.log').toString();
+var insId = fileInsId.split(',');
+for (i=0; i< insId.length -1;i++){
+		var newName = ("instances."+ (i+1)).toString();
+		body += "&" + newName + "=" + insId[i].toString();  	
+	}
+var paraQuery = querystring.stringify(myParameterRestart) + body;
+myParameterRestart = querystring.parse(paraQuery);
+console.log(myParameterRestart);
+
+command2Qc.command2Qc(myParameterRestart,method,uri,function(resObj){
+	
+});
+}
 
 
 
