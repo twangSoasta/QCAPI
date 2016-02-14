@@ -1,5 +1,6 @@
 var https = require('https');
 var QingParameter = require('./QingParameter.js');
+var qString = require('querystring');
 
 
 function command2Qc(myParameter,method,uri,callback){
@@ -20,13 +21,16 @@ function command2Qc(myParameter,method,uri,callback){
         console.log('statusCode: ', res.statusCode);
         console.log('headers: ', res.headers);
         console.log("*********************************************************************************");
-        
-        res.on('data', (d) => {
-      //    process.stdout.write(d+"\n");
-      	var dObj = JSON.parse(d);
-      //	console.log(dObj);
-	        callback(dObj);
-        });
+      var body = "";  
+      res.on('data', (d) => {
+        //  process.stdout.write("stdout\n"+d+"\n");
+     	  body += d;    	        
+      });
+	  res.on('end',()=>{
+	     var dObj = JSON.parse(body);
+	     console.log(dObj);
+	     callback(dObj);
+	    });
       });
       req.end();
       

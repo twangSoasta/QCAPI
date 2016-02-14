@@ -1,4 +1,4 @@
-const NUMEIP_INSTANCES = 2;
+const NUMEIP_INSTANCES = 5;
 var fs = require('fs');
 var csv = fs.readFileSync("../files/access_key_soasta.csv").toString();
 var querystring = require('querystring');
@@ -30,7 +30,7 @@ var access_key_id = keyString.substring(keyString.indexOf("'")+1,keyString.lengt
 
  
 
-if (true) {
+if (false) {
 // create instance 
 var myParameterCreate = {
     "count":NUMEIP_INSTANCES,
@@ -76,6 +76,7 @@ command2Qc.command2Qc(myParameterCreateEip,method,uri,function(resObj){
 
 if (false) {
 // Describe EIPs 
+var OVERWRITE_FILE = false;
 var myParameterDesEip = {
     "zone":"pek2",
     "signature_version":1,                     
@@ -88,8 +89,10 @@ var myParameterDesEip = {
 command2Qc.command2Qc(myParameterDesEip,method,uri,function(resObj){
 	var eipSetLength = resObj.eip_set.length;
 	var eipArr = [];
+	if (OVERWRITE_FILE){
 	fs.writeFileSync('./eipid.log',""); 
 	fs.writeFileSync('./eipaddr.log',""); 
+	}
 	   resObj.eip_set.forEach(function(eipObj){
 		  if (eipObj.eip_name === "twEIP" && eipObj.status === "available" ) {
 			  eipArr.push(eipObj.eip_addr);
@@ -102,8 +105,9 @@ command2Qc.command2Qc(myParameterDesEip,method,uri,function(resObj){
 });
 }
 
-if (false) {
+if (true) {
 // Describe Instances 
+var OVERWRITE_FILE = false;
 var myParameterDesIns = {
     "zone":"pek2",
     "signature_version":1,                     
@@ -116,7 +120,9 @@ var myParameterDesIns = {
 command2Qc.command2Qc(myParameterDesIns,method,uri,function(resObj){
 	var InsSetLength = resObj.instance_set.length;
 	var InsArr = [];
+	if (OVERWRITE_FILE) {
 	fs.writeFileSync('./instanceid.log',"");   //create an empty or clear the existing log
+	}
 	   resObj.instance_set.forEach(function(InsObj){
 		  if (InsObj.instance_name === "twLG" && InsObj.status === "running" ) {
 			  InsArr.push(InsObj.instance_id);
