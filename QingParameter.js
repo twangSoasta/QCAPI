@@ -1,7 +1,7 @@
 var fs = require('fs');
 var querystring = require('querystring');
-var csv = fs.readFileSync("../files/VisQingcloudAPI.csv").toString();
-var AccessString = csv.split(",")[1];
+var csv = fs.readFileSync("../files/access_key_soasta.csv").toString(); 
+var AccessString = csv.split(",")[1]; 
 var secret = AccessString.substring(AccessString.indexOf("'")+1,AccessString.length-1);
 /*
 var myParameter = {

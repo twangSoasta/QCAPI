@@ -1,5 +1,6 @@
-const NUMEIP_INSTANCES = 5;
+const NUMEIP_INSTANCES = 2;
 var fs = require('fs');
+var csv = fs.readFileSync("../files/access_key_soasta.csv").toString();
 var querystring = require('querystring');
 var command2Qc = require('./QingcloudReq.js');
 var method = "GET";
@@ -23,17 +24,18 @@ var myParameterSample = {
 //	"action":"StopRDBs",
     "time_stamp":"2013-08-27T14:30:10Z"	     //will be substitute by the real timestamp in the call
 };
- var csv = fs.readFileSync("../files/VisQingcloudAPI.csv").toString();
- var keyString = csv.split(",")[0];
- var access_key_id = keyString.substring(keyString.indexOf("'")+1,keyString.length-1);
+
+var keyString = csv.split(",")[0];
+var access_key_id = keyString.substring(keyString.indexOf("'")+1,keyString.length-1);
 
  
 
-if (false) {
+if (true) {
 // create instance 
 var myParameterCreate = {
     "count":NUMEIP_INSTANCES,
-	"image_id":"img-7cqsetqo",
+//	"image_id":"img-7cqsetqo",        //vis
+    "image_id":"img-1wbv1ydv",
 	"instance_type":"c1m1",
     "zone":"pek2",
 	"instance_name":"twLG",
@@ -221,7 +223,7 @@ command2Qc.command2Qc(myParameterStart,method,uri,function(resObj){
 });
 }
 
-if (true) {
+if (false) {
 // stop instance 
 var myParameterStop = {
     "count":1,
