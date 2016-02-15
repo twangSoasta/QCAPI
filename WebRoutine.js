@@ -15,70 +15,53 @@ var access_key_id = keyString.substring(keyString.indexOf("'")+1,keyString.lengt
 var NUM =1;
 var div = 1;
 var mod = 1;
-//var body = '<html>'+                  
-//    '<head>'+
-//    '<meta http-equiv="Content-Type" content="text/html; '+
-//    'charset=UTF-8" />'+
-//    '</head>'+
-//    '<body>'+
-//	'<h1>Welcome to use NodeJs Routine for Qingcloud API</h1>'+
-//    '<form action="/upload" method="post">'+           
-//    '<textarea name="text" rows="4" cols="30"></textarea>'+
-//    '<input type="submit" value="Submit text" />'+
-//    '</form>'+
-//	'<form action="/create_instance" method="post">'+           
-//	'<input type="submit" value="Create_instance" />'+
-//    '</form>'+
-//	'<form action="/create_eip" method="post">'+           
-//	'<input type="submit" value="Create_eip" />'+
-//    '</form>'+
-//	'<form action="/describe_instance" method="post">'+           
-//	'<input type="submit" value="Describe_instance" />'+
-//    '</form>'+
-//	'<form action="/describe_eip" method="post">'+           
-//	'<input type="submit" value="Describe_eip" />'+
-//    '</form>'+
-//	'<form action="/associate_eip" method="post">'+           
-//	'<input type="submit" value="Associate_eip" />'+
-//    '</form>'+
-//	'<form action="/stop_instance" method="post">'+           
-//	'<input type="submit" value="Stop_instance" />'+
-//    '</form>'+
-//	'<form action="/start_instance" method="post">'+           
-//	'<input type="submit" value="Start_instance" />'+
-//    '</form>'+
-//	'<form action="/restart_instance" method="post">'+           
-//	'<input type="submit" value="Restart_instance" />'+
-//    '</form>'+
-//	'<form action="/dissociate_eip" method="post">'+           
-//	'<input type="submit" value="Dissociate_eip" />'+
-//    '</form>'+
-//	'<form action="/delete_instance" method="post">'+           
-//	'<input type="submit" value="Delete_instance" />'+
-//    '</form>'+
-//	'<form action="/delete_eip" method="post">'+           
-//	'<input type="submit" value="Delete_eip" />'+
-//    '</form>'+
-//	'</body>'+
-//    '</html>';
-
-var body = '<html>'+                  //text form and file upload form
+var body = '<html>'+                  
     '<head>'+
     '<meta http-equiv="Content-Type" content="text/html; '+
     'charset=UTF-8" />'+
     '</head>'+
     '<body>'+
-    '<form action="/upload" method="post">'+           // form action determine the url
-    '<textarea name="text" rows="20" cols="60"></textarea>'+
+	'<h1>Welcome to use NodeJs Routine for Qingcloud API</h1>'+
+    '<form action="/upload" method="post">'+           
+    '<textarea name="text" rows="4" cols="30"></textarea>'+
     '<input type="submit" value="Submit text" />'+
     '</form>'+
-	'<form action="/uploadfile" enctype="multipart/form-data" '+   
-    'method="post">'+
-    '<input type="file" name="upload" multiple="multiple">'+
-    '<input type="submit" value="Upload file" />'+
-    '</form>'+	
-    '</body>'+
+	'<form action="/create_instance" method="post">'+           
+	'<input type="submit" value="Create_instance" />'+
+    '</form>'+
+	'<form action="/create_eip" method="post">'+           
+	'<input type="submit" value="Create_eip" />'+
+    '</form>'+
+	'<form action="/describe_instance" method="post">'+           
+	'<input type="submit" value="Describe_instance" />'+
+    '</form>'+
+	'<form action="/describe_eip" method="post">'+           
+	'<input type="submit" value="Describe_eip" />'+
+    '</form>'+
+	'<form action="/associate_eip" method="post">'+           
+	'<input type="submit" value="Associate_eip" />'+
+    '</form>'+
+	'<form action="/stop_instance" method="post">'+           
+	'<input type="submit" value="Stop_instance" />'+
+    '</form>'+
+	'<form action="/start_instance" method="post">'+           
+	'<input type="submit" value="Start_instance" />'+
+    '</form>'+
+	'<form action="/restart_instance" method="post">'+           
+	'<input type="submit" value="Restart_instance" />'+
+    '</form>'+
+	'<form action="/dissociate_eip" method="post">'+           
+	'<input type="submit" value="Dissociate_eip" />'+
+    '</form>'+
+	'<form action="/delete_instance" method="post">'+           
+	'<input type="submit" value="Delete_instance" />'+
+    '</form>'+
+	'<form action="/delete_eip" method="post">'+           
+	'<input type="submit" value="Delete_eip" />'+
+    '</form>'+
+	'</body>'+
     '</html>';
+
 
 var server = http.createServer(function(req,res){
 	var pathName = url.parse(req.url).pathname; 
@@ -310,11 +293,12 @@ var server = http.createServer(function(req,res){
               };
               var fileInsId = fs.readFileSync('./instanceid.log').toString();
               var insId = fileInsId.split(',');
+			  var bodytxt ="";
               for (i=0; i< insId.length -1;i++){
               		var newName = ("instances."+ (i+1)).toString();
-              		body += "&" + newName + "=" + insId[i].toString();  	
+              		bodytxt += "&" + newName + "=" + insId[i].toString();  	
               	}
-              var paraQuery = querystring.stringify(myParameterStop) + body;
+              var paraQuery = querystring.stringify(myParameterStop) + bodytxt;
               myParameterStop = querystring.parse(paraQuery);
               console.log(myParameterStop);
               
@@ -340,11 +324,12 @@ var server = http.createServer(function(req,res){
               };
               var fileInsId = fs.readFileSync('./instanceid.log').toString();
               var insId = fileInsId.split(',');
+			  var bodytxt ="";
               for (i=0; i< insId.length -1;i++){
               		var newName = ("instances."+ (i+1)).toString();
-              		body += "&" + newName + "=" + insId[i].toString();  	
+              		bodytxt += "&" + newName + "=" + insId[i].toString();  	
               	}
-              var paraQuery = querystring.stringify(myParameterStart) + body;
+              var paraQuery = querystring.stringify(myParameterStart) + bodytxt;
               myParameterStart = querystring.parse(paraQuery);
               console.log(myParameterStart);
               
@@ -370,11 +355,12 @@ var server = http.createServer(function(req,res){
               };
               var fileInsId = fs.readFileSync('./instanceid.log').toString();
               var insId = fileInsId.split(',');
+			  var bodytxt = "";
               for (i=0; i< insId.length -1;i++){
               		var newName = ("instances."+ (i+1)).toString();
-              		body += "&" + newName + "=" + insId[i].toString();  	
+              		bodytxt += "&" + newName + "=" + insId[i].toString();  	
               	}
-              var paraQuery = querystring.stringify(myParameterRestart) + body;
+              var paraQuery = querystring.stringify(myParameterRestart) + bodytxt;
               myParameterRestart = querystring.parse(paraQuery);
               console.log(myParameterRestart);
               
@@ -406,12 +392,12 @@ var server = http.createServer(function(req,res){
               if (eipId.length != insId.length) {
               	console.log("Error: EIP number:"+eipId.length," mismatches "+"INSTANCE number:"+insId.length);
               } else {
-              	var body ="";
+              	var bodytxt ="";
               	for (i=0; i< eipId.length -1;i++){
               		var newName = ("eips."+ (i+1)).toString();
-              		body += "&" + newName + "=" + eipId[i].toString();  	
+              		bodytxt += "&" + newName + "=" + eipId[i].toString();  	
               	}
-              var paraQuery = querystring.stringify(myParameterDissociate) + body;
+              var paraQuery = querystring.stringify(myParameterDissociate) + bodytxt;
               myParameterDissociate = querystring.parse(paraQuery);
               console.log(myParameterDissociate);
               command2Qc.command2Qc(myParameterDissociate,method,uri,function(resObj){
@@ -437,11 +423,12 @@ var server = http.createServer(function(req,res){
               };
               var fileInsId = fs.readFileSync('./instanceid.log').toString();
               var insId = fileInsId.split(',');
+			  var bodytxt ="";
               for (i=0; i< insId.length -1;i++){
               		var newName = ("instances."+ (i+1)).toString();
-              		body += "&" + newName + "=" + insId[i].toString();  	
+              		bodytxt += "&" + newName + "=" + insId[i].toString();  	
               	}
-              var paraQuery = querystring.stringify(myParameterDelIns) + body;
+              var paraQuery = querystring.stringify(myParameterDelIns) + bodytxt;
               myParameterDelIns = querystring.parse(paraQuery);
               console.log(myParameterDelIns);
               
@@ -473,12 +460,12 @@ var server = http.createServer(function(req,res){
               if (eipId.length != insId.length) {
               	console.log("Error: EIP number:"+eipId.length," mismatches "+"INSTANCE number:"+insId.length);
               } else {
-              	var body ="";
+              	var bodytxt ="";
               	for (i=0; i< eipId.length -1;i++){
               		var newName = ("eips."+ (i+1)).toString();
-              		body += "&" + newName + "=" + eipId[i].toString();  	
+              		bodytxt += "&" + newName + "=" + eipId[i].toString();  	
               	}
-              var paraQuery = querystring.stringify(myParameterRelease) + body;
+              var paraQuery = querystring.stringify(myParameterRelease) + bodytxt;
               myParameterRelease = querystring.parse(paraQuery);
               console.log(myParameterRelease);
               command2Qc.command2Qc(myParameterRelease,method,uri,function(resObj){
@@ -491,7 +478,7 @@ var server = http.createServer(function(req,res){
 	   	   	 
 	   	   default:	
                res.writeHead("200",{"content-type":"text/html"});
-			   res.write("You are hitting the default page");
+			   res.write("You are hitting the default page"); 
 	   		   res.write(body); 
                res.end();			
 	   }
