@@ -78,6 +78,7 @@ if (false) {
 // Describe EIPs 
 var OVERWRITE_FILE = false;
 var myParameterDesEip = {
+	"limit":1000,
     "zone":"pek2",
     "signature_version":1,                     
     "signature_method":"HmacSHA256",              
@@ -109,6 +110,7 @@ if (false) {
 // Describe Instances 
 var OVERWRITE_FILE = false;
 var myParameterDesIns = {
+	"limit":1000,
     "zone":"pek2",
     "signature_version":1,                     
     "signature_method":"HmacSHA256",              
@@ -201,7 +203,7 @@ command2Qc.command2Qc(myParameterDissociate,method,uri,function(resObj){
  }
 }
 
-if (true) {
+if (false) {
 // Delete EIPs
 var myParameterRelease = {
     "zone": "pek2",
@@ -218,9 +220,7 @@ var eipId = fileEipId.split(',');
 var fileInsId = fs.readFileSync('./instanceid.log').toString();
 var insId = fileInsId.split(',');	
 
-if (eipId.length != insId.length) {
-	console.log("Error: EIP number:"+eipId.length," mismatches "+"INSTANCE number:"+insId.length);
-} else {
+
 	var body ="";
 	for (i=0; i< eipId.length -1;i++){
 		var newName = ("eips."+ (i+1)).toString();
@@ -232,7 +232,7 @@ console.log(myParameterRelease);
 command2Qc.command2Qc(myParameterRelease,method,uri,function(resObj){
 
         });
- }
+ 
 }
 
 

@@ -183,6 +183,7 @@ var server = http.createServer(function(req,res){
 	   	      res.write("describe instance");
 	   	      res.end(body);
 		      var myParameterDesIns = {
+				  "limit":1000,
                   "zone":"pek2",
                   "signature_version":1,                     
                   "signature_method":"HmacSHA256",              
@@ -213,6 +214,7 @@ var server = http.createServer(function(req,res){
 	   	      res.write("describe eip");
 	   	      res.end(body);
 		      var myParameterDesEip = {
+				  "limit":1000,
                   "zone":"pek2",
                   "signature_version":1,                     
                   "signature_method":"HmacSHA256",              
@@ -457,21 +459,18 @@ var server = http.createServer(function(req,res){
               var fileInsId = fs.readFileSync('./instanceid.log').toString();
               var insId = fileInsId.split(',');	
               
-              if (eipId.length != insId.length) {
-              	console.log("Error: EIP number:"+eipId.length," mismatches "+"INSTANCE number:"+insId.length);
-              } else {
-              	var bodytxt ="";
-              	for (i=0; i< eipId.length -1;i++){
-              		var newName = ("eips."+ (i+1)).toString();
-              		bodytxt += "&" + newName + "=" + eipId[i].toString();  	
-              	}
+              
+              var bodytxt ="";
+              for (i=0; i< eipId.length -1;i++){
+              	var newName = ("eips."+ (i+1)).toString();
+              	bodytxt += "&" + newName + "=" + eipId[i].toString();  	
+              }
               var paraQuery = querystring.stringify(myParameterRelease) + bodytxt;
               myParameterRelease = querystring.parse(paraQuery);
               console.log(myParameterRelease);
               command2Qc.command2Qc(myParameterRelease,method,uri,function(resObj){
               
                       });
-               }
 		   
 		   break;
 		   
