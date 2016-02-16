@@ -3,7 +3,6 @@ var fs = require('fs');
 var url = require('url');
 //var formidable = require('formidable');
 var generateXML = require('./GenerateXML.js');
-var OVERWRITE_FILE = true;
 var host = "127.0.0.1";
 var port = 8080;
 var csv = fs.readFileSync("../files/access_key_soasta.csv").toString();
@@ -13,6 +12,14 @@ var method = "GET";
 var uri = "/iaas/";
 var keyString = csv.split(",")[0];
 var access_key_id = keyString.substring(keyString.indexOf("'")+1,keyString.length-1);
+/////////////////////////////////////////////////////////////////////////////////////
+const INSTANCE_TYPE = "c2m4";
+const BANDWIDTH = 10;
+const OVERWRITE_FILE = true;
+const PATH = "Beijing Qingcloud Loc #2";      //"QingCloud China Beijing 2";
+const REGION = "pek2";
+const securityGroup = "sg-u279b2do";     //"sg-ewbcbab5";
+/////////////////////////////////////////////////////////////////////////////////////
 var NUM =1;
 var div = 1;
 var mod = 1;
@@ -20,9 +27,17 @@ var body = '<html>'+
     '<head>'+
     '<meta http-equiv="Content-Type" content="text/html; '+
     'charset=UTF-8" />'+
+	'<style type="text/css">'+
+      'img{'+
+         'position:absolute;'+
+         'left:600px;'+
+         'top:200px;'+
+         '}'+
+    '</style>'+
     '</head>'+
-    '<body>'+
+    '<body>'+  
 	'<h1>Welcome to use NodeJs Routine for Qingcloud API</h1>'+
+	'<img src="http://www.soasta.com/wp-content/uploads/2015/05/cloudtest-pp-2.jpg" width="800" height="600"></div>'+
     '<form action="/upload" method="post">'+           
     '<textarea name="text" rows="4" cols="30"></textarea>'+
     '<input type="submit" value="Submit text" />'+
@@ -65,10 +80,6 @@ var body = '<html>'+
     '</form>'+
 	'</body>'+
     '</html>';
-var PATH = "Beijing Qingcloud Loc #2";      //"QingCloud China Beijing 2";
-var REGION = "pek2";
-var securityGroup = "sg-u279b2do";     //"sg-ewbcbab5";
-
 
 var server = http.createServer(function(req,res){
 	var pathName = url.parse(req.url).pathname; 
@@ -103,7 +114,7 @@ var server = http.createServer(function(req,res){
                         "count":10,
                     //	"image_id":"img-7cqsetqo",        //vis
                         "image_id":"img-1wbv1ydv",
-                    	"instance_type":"c1m1",
+                    	"instance_type":INSTANCE_TYPE,
                         "zone":"pek2",
                     	"instance_name":"twLG",
                     	"login_mode":"passwd",
@@ -124,7 +135,7 @@ var server = http.createServer(function(req,res){
                         "count":mod,
                     //	"image_id":"img-7cqsetqo",        //vis
                         "image_id":"img-1wbv1ydv",
-                    	"instance_type":"c2m4",
+                    	"instance_type":INSTANCE_TYPE,
                         "zone":"pek2",
                     	"instance_name":"twLG",
                     	"login_mode":"passwd",
@@ -144,7 +155,6 @@ var server = http.createServer(function(req,res){
 	   	   break;
 		   
 		   case "/create_eip" : 
-		      const BANDWIDTH = 10;
 			  res.writeHead("200",{"content-type":"text/html"});
 	   	   	  res.write("Creating eips in progress");
 	   	   	  res.end(body);
