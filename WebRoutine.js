@@ -2,6 +2,7 @@ var http = require('http');
 var fs = require('fs');
 var url = require('url');
 //var formidable = require('formidable');
+var generateXML = require('./GenerateXML.js');
 var OVERWRITE_FILE = true;
 var host = "127.0.0.1";
 var port = 8080;
@@ -59,8 +60,14 @@ var body = '<html>'+
 	'<form action="/delete_eip" method="post">'+           
 	'<input type="submit" value="Delete_eip" />'+
     '</form>'+
+	'<form action="/generate_xml" method="post">'+           
+	'<input type="submit" value="Generate_xml" />'+
+    '</form>'+
 	'</body>'+
     '</html>';
+var PATH = "Beijing Qingcloud Loc #2";      //"QingCloud China Beijing 2";
+var REGION = "pek2";
+var securityGroup = "sg-u279b2do";     //"sg-ewbcbab5";
 
 
 var server = http.createServer(function(req,res){
@@ -474,7 +481,13 @@ var server = http.createServer(function(req,res){
 		   
 		   break;
 		   
-	   	   	 
+		   case "/generate_xml" :
+		      generateXML.generateXML(PATH, REGION, securityGroup);
+              res.writeHead("200",{"content-type":"text/html"});
+	   	      res.write("LG.xml and twMonServer.xml file generated");
+	   	      res.end(body);	
+           break;
+		   
 	   	   default:	
                res.writeHead("200",{"content-type":"text/html"});
 			   res.write("You are hitting the default page"); 

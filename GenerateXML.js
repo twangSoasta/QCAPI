@@ -3,7 +3,11 @@ var fs = require('fs');
 var PATH = "Beijing Qingcloud Loc #2";      //"QingCloud China Beijing 2";
 var REGION = "pek2";
 var securityGroup = "sg-u279b2do";     //"sg-ewbcbab5";
-var publicHostName = "119.254.111.93";
+
+//generateXML(PATH, REGION, securityGroup);
+exports.generateXML = generateXML;
+
+function generateXML(PATH, REGION, securityGroup){
 var instanceId = "";
 var eip = "";
 var instanceIdArr = fs.readFileSync("./instanceid.log").toString().split(",");
@@ -70,7 +74,7 @@ fs.appendFileSync("./LG.xml",endData);
 console.log("LG file write completed!!!");
 fs.appendFileSync("./twMonServer.xml",endMonData);
 console.log("Monitor file write completed!!!");
-
+}
 
 
 
