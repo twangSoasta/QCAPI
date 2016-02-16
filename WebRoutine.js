@@ -1,7 +1,7 @@
 var http = require('http');
 var fs = require('fs');
 var url = require('url');
-var formidable = require('formidable');
+//var formidable = require('formidable');
 var OVERWRITE_FILE = true;
 var host = "127.0.0.1";
 var port = 8080;
@@ -117,7 +117,7 @@ var server = http.createServer(function(req,res){
                         "count":mod,
                     //	"image_id":"img-7cqsetqo",        //vis
                         "image_id":"img-1wbv1ydv",
-                    	"instance_type":"c1m1",
+                    	"instance_type":"c2m4",
                         "zone":"pek2",
                     	"instance_name":"twLG",
                     	"login_mode":"passwd",
@@ -137,7 +137,7 @@ var server = http.createServer(function(req,res){
 	   	   break;
 		   
 		   case "/create_eip" : 
-		      const BANDWIDTH = 2;
+		      const BANDWIDTH = 10;
 			  res.writeHead("200",{"content-type":"text/html"});
 	   	   	  res.write("Creating eips in progress");
 	   	   	  res.end(body);
@@ -231,7 +231,7 @@ var server = http.createServer(function(req,res){
             	fs.writeFileSync('./eipaddr.log',""); 
             	}
             	   resObj.eip_set.forEach(function(eipObj){
-            		  if (eipObj.eip_name === "twEIP" && eipObj.status === "available" ) {
+            		  if (eipObj.eip_name === "twEIP" && (eipObj.status === "available" | eipObj.status === "associated")) {
             			  eipArr.push(eipObj.eip_addr);
             			  fs.appendFileSync('./eipid.log',eipObj.eip_id+','); 
             	          fs.appendFileSync('./eipaddr.log',eipObj.eip_addr+','); 
