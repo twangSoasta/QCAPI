@@ -1,4 +1,4 @@
-const NUMEIP_INSTANCES = 15;
+const NUMEIP_INSTANCES = 5;
 var fs = require('fs');
 var csv = fs.readFileSync("../files/access_key_soasta.csv").toString();
 var querystring = require('querystring');
@@ -21,7 +21,7 @@ var myParameterCreate = {
     "count":10,
 //	"image_id":"img-7cqsetqo",        //vis
     "image_id":"img-1wbv1ydv",
-	"instance_type":"c1m1",
+	"instance_type":"c2m4",
     "zone":"pek2",
 	"instance_name":"twLG",
 	"login_mode":"passwd",
@@ -42,7 +42,7 @@ var myParameterCreate1 = {
     "count":mod,
 //	"image_id":"img-7cqsetqo",        //vis
     "image_id":"img-1wbv1ydv",
-	"instance_type":"c1m1",
+	"instance_type":"c2m4",
     "zone":"pek2",
 	"instance_name":"twLG",
 	"login_mode":"passwd",

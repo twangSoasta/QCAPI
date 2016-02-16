@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rp:ObjectSet xmlns:rp="http://www.soasta.com/services/repository">
+  <Object type="monitorspec" schemaVersion="8138" name="twLGMon" path="/">
+    <Body>
+      <MonitorSpec xmlns="http://www.soasta.com/services/repository">
+        <Resources>
+          <Resource customName="" frequency="5000" targetInternalID="95305" targetServerID="1" type="CPU" />
+          <Resource customName="" frequency="5000" targetInternalID="95305" targetServerID="1" type="IOBytesRead" />
+          <Resource customName="" frequency="5000" targetInternalID="95305" targetServerID="1" type="IOBytesWritten" />
+          <Resource customName="" frequency="5000" targetInternalID="95305" targetServerID="1" type="Memory" />
+          <Resource customName="" frequency="5000" targetInternalID="95305" targetServerID="1" type="NetworkBytesReceived" />
+          <Resource customName="" frequency="5000" targetInternalID="95305" targetServerID="1" type="NetworkBytesSent" />
+        </Resources>
+      </MonitorSpec>
+    </Body>
+    <BinaryData />
+    <Description></Description>
+    <Attributes>
+      <Attribute name="resultsServiceID">
+        <Value>5</Value>
+      </Attribute>
+      <Attribute name="autoStart">
+        <Value>false</Value>
+      </Attribute>
+      <Attribute name="autoStartOnce">
+        <Value>false</Value>
+      </Attribute>
+      <Attribute name="resultsDatabaseID">
+        <Value>1</Value>
+      </Attribute>
+    </Attributes>
+    <References>
+      <Reference id="95305" internalID="95305" name="twMonServer" path="/" type="target" />
+    </References>
+  </Object>
+</rp:ObjectSet>

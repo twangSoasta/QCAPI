@@ -1,4 +1,4 @@
-const NUMEIP_INSTANCES = 5;
+const NUMEIP_INSTANCES = 3;
 var fs = require('fs');
 var csv = fs.readFileSync("../files/access_key_soasta.csv").toString();
 var querystring = require('querystring');
