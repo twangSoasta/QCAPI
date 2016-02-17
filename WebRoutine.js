@@ -197,8 +197,7 @@ var server = http.createServer(function(req,res){
 		   
 		   case "/describe_instance" : 
 		      res.writeHead("200",{"content-type":"text/html"});
-	   	      res.write("describe instance");
-	   	      res.end(body);
+	   	      res.write("describe instance =======> ");
 		      var myParameterDesIns = {
 				  "limit":1000,
                   "zone":"pek2",
@@ -221,15 +220,16 @@ var server = http.createServer(function(req,res){
 	   		     fs.appendFileSync('./instanceid.log',InsObj.instance_id+',');
 	   	     }	  
 	         });
-	         console.log("InsArr:\n",InsArr); 	   
+	         console.log("InsArr:\n",InsArr); 	
+             res.write("Total "+InsArr.length.toString()+ " instances created: "+InsArr.toString());
+             res.end(body);			 
              });
 		   
 		   break;
 		   
 		   case "/describe_eip" : 
 		      res.writeHead("200",{"content-type":"text/html"});
-	   	      res.write("describe eip");
-	   	      res.end(body);
+	   	      res.write("describe eip =======> ");
 		      var myParameterDesEip = {
 				  "limit":1000,
                   "zone":"pek2",
@@ -255,7 +255,8 @@ var server = http.createServer(function(req,res){
             		  }	  
             	   });
             	   console.log("eipArr:\n",eipArr); 
-            	   
+            	   res.write("Total "+eipArr.length.toString()+ " EIPs created: "+eipArr.toString());	
+				   res.end(body);
             });
 		   
 		   break;
