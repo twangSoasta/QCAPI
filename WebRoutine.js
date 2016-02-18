@@ -158,11 +158,11 @@ var server = http.createServer(function(req,res){
               };
                 var myParameterCreateArr = [];   //used for Async loop
                 for (i=0; i<=div;i++) {
-					 myParameterCreateArr.push(myParameterCreate);
+					 myParameterCreateArr.push(myParameterCreateEip);
 					}
 				 myParameterCreateArr[div].count = mod;
-				 myParameterCreateArr.forEach(function(myParameterCreate){
-                    command2Qc.command2Qc(myParameterCreate,method,uri,function(resObj){
+				 myParameterCreateArr.forEach(function(myParameterCreateEip){
+                    command2Qc.command2Qc(myParameterCreateEip,method,uri,function(resObj){
                     	
                     });
                  });  
