@@ -109,8 +109,7 @@ var server = http.createServer(function(req,res){
 	   	   		 res.write("Creating instances in progress");
 	   	   		 res.end(body);
 				 // create instance 
-                 for (i=0; i<div;i++) {
-                    var myParameterCreate = {
+				 var myParameterCreate = {
                         "count":10,
                     //	"image_id":"img-7cqsetqo",        //vis
                         "image_id":"img-1wbv1ydv",
@@ -127,30 +126,14 @@ var server = http.createServer(function(req,res){
                         "action":"RunInstances",            
                         "time_stamp":"2013-08-27T14:30:10Z"	     
                     };
+                 for (i=0; i<=div;i++) {
+                    if (i === div) {
+						myParameterCreate.count = mod;
+					}
                     command2Qc.command2Qc(myParameterCreate,method,uri,function(resObj){
                     	
                     });
                     }
-                    var myParameterCreate1 = {
-                        "count":mod,
-                    //	"image_id":"img-7cqsetqo",        //vis
-                        "image_id":"img-1wbv1ydv",
-                    	"instance_type":INSTANCE_TYPE,
-                        "zone":"pek2",
-                    	"instance_name":"twLG",
-                    	"login_mode":"passwd",
-                    	"login_passwd":"Soasta2006",
-                        "vxnets.1":"vxnet-0",
-                        "signature_version":1,                     
-                        "signature_method":"HmacSHA256",              
-                        "version":1,                              
-                        "access_key_id":access_key_id,   
-                        "action":"RunInstances",            
-                        "time_stamp":"2013-08-27T14:30:10Z"	     
-                    };
-                    command2Qc.command2Qc(myParameterCreate1,method,uri,function(resObj){
-                    	
-                    });
  
 	   	   break;
 		   
@@ -158,8 +141,7 @@ var server = http.createServer(function(req,res){
 			  res.writeHead("200",{"content-type":"text/html"});
 	   	   	  res.write("Creating eips in progress");
 	   	   	  res.end(body);
-              for (i=0; i<div;i++) {
-              var myParameterCreateEip = {
+			   var myParameterCreateEip = {
                   "count":10,
               	"bandwidth":BANDWIDTH,
               	"billing_mode":"traffic",
@@ -172,27 +154,15 @@ var server = http.createServer(function(req,res){
                   "action":"AllocateEips",            
                   "time_stamp":"2013-08-27T14:30:10Z"	     
               };
+              for (i=0; i<=div;i++) {
+              if (i === div) {
+				  myParameterCreateEip.count = mod;
+			  }
               command2Qc.command2Qc(myParameterCreateEip,method,uri,function(resObj){
               	
               });
               }
-              var myParameterCreateEip1 = {
-                  "count":mod,
-              	"bandwidth":BANDWIDTH,
-              	"billing_mode":"traffic",
-              	"eip_name":"twEIP",
-                  "zone":"pek2",
-                  "signature_version":1,                     
-                  "signature_method":"HmacSHA256",              
-                  "version":1,                              
-                  "access_key_id":access_key_id,   
-                  "action":"AllocateEips",            
-                  "time_stamp":"2013-08-27T14:30:10Z"	     
-              };
-              command2Qc.command2Qc(myParameterCreateEip1,method,uri,function(resObj){
-              	
-              });
-		   
+           		   
 		   break;
 		   
 		   case "/describe_instance" : 
