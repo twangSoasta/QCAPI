@@ -126,14 +126,16 @@ var server = http.createServer(function(req,res){
                         "action":"RunInstances",            
                         "time_stamp":"2013-08-27T14:30:10Z"	     
                     };
+				 var myParameterCreateArr = [];   //used for Async loop
                  for (i=0; i<=div;i++) {
-                    if (i === div) {
-						myParameterCreate.count = mod;
+					 myParameterCreateArr.push(myParameterCreate);
 					}
+				 myParameterCreateArr[div].count = mod;
+				 myParameterCreateArr.forEach(function(myParameterCreate){
                     command2Qc.command2Qc(myParameterCreate,method,uri,function(resObj){
                     	
                     });
-                    }
+                 });  
  
 	   	   break;
 		   
@@ -154,14 +156,16 @@ var server = http.createServer(function(req,res){
                   "action":"AllocateEips",            
                   "time_stamp":"2013-08-27T14:30:10Z"	     
               };
-              for (i=0; i<=div;i++) {
-              if (i === div) {
-				  myParameterCreateEip.count = mod;
-			  }
-              command2Qc.command2Qc(myParameterCreateEip,method,uri,function(resObj){
-              	
-              });
-              }
+                var myParameterCreateArr = [];   //used for Async loop
+                for (i=0; i<=div;i++) {
+					 myParameterCreateArr.push(myParameterCreate);
+					}
+				 myParameterCreateArr[div].count = mod;
+				 myParameterCreateArr.forEach(function(myParameterCreate){
+                    command2Qc.command2Qc(myParameterCreate,method,uri,function(resObj){
+                    	
+                    });
+                 });  
            		   
 		   break;
 		   
