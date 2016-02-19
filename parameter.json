@@ -1,0 +1,128 @@
+{
+"/create_instance":    {"count":10,
+                        "image_id":"img-1wbv1ydv",
+                    	"instance_type":null,
+                        "zone":"pek2",
+                    	"instance_name":"twLG",
+                    	"login_mode":"passwd",
+                    	"login_passwd":"Soasta2006",
+                        "vxnets.1":"vxnet-0",
+                        "signature_version":1,                     
+                        "signature_method":"HmacSHA256",              
+                        "version":1,                              
+                        "access_key_id":null,   
+                        "action":"RunInstances",            
+                        "time_stamp":"2013-08-27T14:30:10Z"},
+"/create_eip":        {
+                  "count":10,
+              	  "bandwidth":null,
+                  "billing_mode":"traffic",
+              	  "eip_name":"twEIP",
+                  "zone":"pek2",
+                  "signature_version":1,                     
+                  "signature_method":"HmacSHA256",              
+                  "version":1,                              
+                  "access_key_id":null,   
+                  "action":"AllocateEips",            
+                  "time_stamp":"2013-08-27T14:30:10Z"	     
+              },
+
+"/describe_instance": {
+				  "limit":1000,
+                  "zone":"pek2",
+                  "signature_version":1,                     
+                  "signature_method":"HmacSHA256",              
+                  "version":1,                              
+                  "access_key_id":null,   
+                  "action":"DescribeInstances",            
+                  "time_stamp":"2013-08-27T14:30:10Z"	     
+             },
+
+"/describe_eip":{
+				  "limit":1000,
+                  "zone":"pek2",
+                  "signature_version":1,                     
+                  "signature_method":"HmacSHA256",              
+                  "version":1,                              
+                  "access_key_id":null,   
+                  "action":"DescribeEips",            
+                  "time_stamp":"2013-08-27T14:30:10Z"	     
+              },
+
+"/associate_eip":{	
+                 "eip":"",
+   	             "instance":"",
+                 "zone":"pek2",
+                 "signature_version":1,                     
+                 "signature_method":"HmacSHA256",              
+                 "version":1,                              
+                 "access_key_id":null,   
+                 "action":"AssociateEip",            
+                 "time_stamp":"2013-08-27T14:30:10Z"	     
+              } ,
+
+"/stop_instance":{
+                  "count":1,
+                  "zone":"pek2",
+                  "signature_version":1,                     
+                  "signature_method":"HmacSHA256",              
+                  "version":1,                              
+                  "access_key_id":null,   
+                  "action":"StopInstances",            
+                  "time_stamp":"2013-08-27T14:30:10Z"	     
+              } ,
+
+"/start_instance":{
+                 "count":1,
+                 "zone":"pek2",
+                 "signature_version":1,                     
+                 "signature_method":"HmacSHA256",              
+                 "version":1,                              
+                 "access_key_id":null,   
+                 "action":"StartInstances",            
+                 "time_stamp":"2013-08-27T14:30:10Z"	     
+              } ,
+
+"/restart_instance":{
+                 "count":1,
+                 "zone":"pek2",
+                 "signature_version":1,                     
+                 "signature_method":"HmacSHA256",              
+                 "version":1,                              
+                 "access_key_id":null,   
+                 "action":"RestartInstances",            
+                 "time_stamp":"2013-08-27T14:30:10Z"	     
+              } ,
+
+"/dissociate_eip":{
+                 "zone": "pek2",
+                 "signature_version": "1",                     
+                 "signature_method": "HmacSHA256",              
+                 "version":"1",                              
+                 "access_key_id": null,   
+                 "action": "DissociateEips",            
+                 "time_stamp": "2013-08-27T14:30:10Z"    
+              } ,
+
+"/delete_instance":{
+                  "count":1,
+                  "zone":"pek2",
+                  "signature_version":1,                     
+                  "signature_method":"HmacSHA256",              
+                  "version":1,                              
+                  "access_key_id":null,   
+                  "action":"TerminateInstances",            
+                  "time_stamp":"2013-08-27T14:30:10Z"	     
+              } ,
+
+"/delete_eip":{
+                 "zone": "pek2",
+                 "signature_version": "1",                     
+                 "signature_method": "HmacSHA256",              
+                 "version":"1",                              
+                 "access_key_id": null,   
+                 "action": "ReleaseEips",            
+                 "time_stamp": "2013-08-27T14:30:10Z"    
+              } 
+
+}
