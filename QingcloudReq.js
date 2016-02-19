@@ -28,7 +28,12 @@ function command2Qc(myParameter,method,uri,callback){
       });
 	  res.on('end',()=>{
 	     var dObj = JSON.parse(body);
-	//     console.log(dObj);
+		 if (dObj.ret_code !== 0) {
+	        console.log("Error!response body is:\n"+JSON.stringify(dObj));
+		 }
+		 else {
+			 console.log("Response returns no error");
+		 }
 	     callback(dObj);
 	    });
       });
