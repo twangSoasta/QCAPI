@@ -11,7 +11,7 @@ var command2Qc = require('./QingcloudReq.js');
 var method = "GET";
 var uri = "/iaas/";
 var keyString = csv.split(",")[0];
-var access_key_id = keyString.substring(keyString.indexOf("'")+1,keyString.length-1);
+var access_key_id = keyString.substring(keyString.indexOf("'")+1,keyString.lastIndexOf("'"));
 /////////////////////////////////////////////////////////////////////////////////////
 const INSTANCE_TYPE = "c2m4";
 const BANDWIDTH = 10;
