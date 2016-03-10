@@ -41,43 +41,43 @@ var body = '<html>'+
 	'<img src="http://www.soasta.com/wp-content/uploads/2015/05/cloudtest-pp-2.jpg" width="800" height="600"></div>'+
     '<form action="/upload" method="post">'+           
     '<textarea name="text" rows="4" cols="30"></textarea>'+
-    '<input type="submit" value="Submit text" />'+
+    '<input type="submit" value="Submit text" style="height:20px;width:120px" />'+
     '</form>'+
 	'<form action="/create_instance" method="post">'+           
-	'<input type="submit" value="Create_instance" />'+
+	'<input type="submit" value="Create_instance" style="height:20px;width:120px" />'+
     '</form>'+
 	'<form action="/create_eip" method="post">'+           
-	'<input type="submit" value="Create_eip" />'+
+	'<input type="submit" value="Create_eip" style="height:20px;width:120px" />'+
     '</form>'+
 	'<form action="/describe_instance" method="post">'+           
-	'<input type="submit" value="Describe_instance" />'+
+	'<input type="submit" value="Describe_instance" style="height:20px;width:120px" />'+
     '</form>'+
 	'<form action="/describe_eip" method="post">'+           
-	'<input type="submit" value="Describe_eip" />'+
+	'<input type="submit" value="Describe_eip" style="height:20px;width:120px" />'+
     '</form>'+
 	'<form action="/associate_eip" method="post">'+           
-	'<input type="submit" value="Associate_eip" />'+
+	'<input type="submit" value="Associate_eip" style="height:20px;width:120px" />'+
     '</form>'+
 	'<form action="/stop_instance" method="post">'+           
-	'<input type="submit" value="Stop_instance" />'+
+	'<input type="submit" value="Stop_instance" style="height:20px;width:120px" />'+
     '</form>'+
 	'<form action="/start_instance" method="post">'+           
-	'<input type="submit" value="Start_instance" />'+
+	'<input type="submit" value="Start_instance" style="height:20px;width:120px" />'+
     '</form>'+
 	'<form action="/restart_instance" method="post">'+           
-	'<input type="submit" value="Restart_instance" />'+
+	'<input type="submit" value="Restart_instance" style="height:20px;width:120px" />'+
     '</form>'+
 	'<form action="/dissociate_eip" method="post">'+           
-	'<input type="submit" value="Dissociate_eip" />'+
+	'<input type="submit" value="Dissociate_eip" style="height:20px;width:120px" />'+
     '</form>'+
 	'<form action="/delete_instance" method="post">'+           
-	'<input type="submit" value="Delete_instance" />'+
+	'<input type="submit" value="Delete_instance" style="height:20px;width:120px" />'+
     '</form>'+
 	'<form action="/delete_eip" method="post">'+           
-	'<input type="submit" value="Delete_eip" />'+
+	'<input type="submit" value="Delete_eip" style="height:20px;width:120px" />'+
     '</form>'+
 	'<form action="/generate_xml" method="post">'+           
-	'<input type="submit" value="Generate_xml" />'+
+	'<input type="submit" value="Generate_xml" style="height:20px;width:120px" />'+
     '</form>'+
 	'</body>'+
     '</html>';
