@@ -38,9 +38,10 @@ var body = '<html>'+
     '</head>'+
     '<body>'+  
 	'<h1>Welcome to use NodeJs Routine for Qingcloud API</h1>'+
+	'<u1>NumInstances,Bandwidth,ZoneName,InstanceType,ImageID</u1><hr/>'+
 	'<img src="http://www.soasta.com/wp-content/uploads/2015/05/cloudtest-pp-2.jpg" width="800" height="600"></div>'+
     '<form action="/upload" method="post">'+           
-    '<textarea name="text" rows="4" cols="30"></textarea>'+
+    '<textarea name="text" rows="4" cols="30">2,10,pek2,c4m8,img-1wbv1ydv</textarea>'+
     '<input type="submit" value="Submit text" style="height:20px;width:120px" />'+
     '</form>'+
 	'<form action="/create_instance" method="post">'+           
@@ -50,10 +51,10 @@ var body = '<html>'+
 	'<input type="submit" value="Create_eip" style="height:20px;width:120px" />'+
     '</form>'+
 	'<form action="/describe_instance" method="post">'+           
-	'<input type="submit" value="Describe_instance" style="height:20px;width:120px" />'+
+	'<input type="submit" value="Describe_instance" style="height:20px;width:120px;background:#f00" />'+
     '</form>'+
 	'<form action="/describe_eip" method="post">'+           
-	'<input type="submit" value="Describe_eip" style="height:20px;width:120px" />'+
+	'<input type="submit" value="Describe_eip" style="height:20px;width:120px;background:#f00" />'+
     '</form>'+
 	'<form action="/associate_eip" method="post">'+           
 	'<input type="submit" value="Associate_eip" style="height:20px;width:120px" />'+
@@ -82,11 +83,6 @@ var body = '<html>'+
 	'</body>'+
     '</html>';
 	
-jsonObj['/create_instance'].instance_type = INSTANCE_TYPE;
-jsonObj['/create_eip'].bandwidth =BANDWIDTH;
-for (i in jsonObj) {
-	jsonObj[i].access_key_id = access_key_id;
-};
 
 
 var server = http.createServer(function(req,res){
@@ -99,26 +95,42 @@ var server = http.createServer(function(req,res){
 		postData += postDataChunk;
 	});
 	req.on("end",function(){
-		var finalTxt = postData.toString().substring(5);
+		var finalTxt = decodeURIComponent(postData.toString().substring(5));
 		console.log("post text is: ",finalTxt);
 		//after every request, send response
 		res.writeHead("200",{"content-type":"text/html"});
 	   switch (pathName){
-	   	   case "/upload" :                  
-                 NUM = parseInt(finalTxt);	   //assuming upload will always happen before create
+	   	   case "/upload" : 
+		         //the following variables are global variables, can't use var here
+                 inputArr = finalTxt.split(',');
+		         numOfInstances = inputArr[0];
+		         eipBandwidth = (inputArr[1] == undefined)?10:parseInt(inputArr[1]) ;
+		         zoneDc = (inputArr[2] == undefined)?'pek2':inputArr[2];
+		         instanceType = (inputArr[3] == undefined)?'c4m8':inputArr[3];
+		         imageId = (inputArr[4] == undefined)?'img-1wbv1ydv':inputArr[4];		
+                 console.log(numOfInstances+" "+eipBandwidth+" "+zoneDc+" "+instanceType+" "+imageId);	
+				 jsonObj['/create_instance'].instance_type = instanceType;
+				 jsonObj['/create_instance'].image_id = imageId;				 
+                 jsonObj['/create_eip'].bandwidth =eipBandwidth;
+                 for (i in jsonObj) {
+	                jsonObj[i].access_key_id = access_key_id;
+					jsonObj[i].zone = zoneDc;
+                 };				 
+                 NUM = parseInt(numOfInstances);	   //assuming upload will always happen before create
 				 div = Math.floor(NUM/10);
                  mod = NUM - div*10;        
 				 console.log(NUM,div,mod);
-	   	   		 res.write("Creating "+finalTxt+" LGs");
+	   	   		 res.write("Creating "+numOfInstances+" LGs");
 	   	   		 res.end(body);   	   		
 	   	   break;
 	   	   	 
 	   	   case "/create_instance" : 
+		         console.log(mod+" "+numOfInstances+" "+eipBandwidth+" "+zoneDc+" "+instanceType+" "+imageId);	
 		         var modJsonIns = 
 				 {"count":mod,
-                  "image_id":"img-1wbv1ydv",
-                  "instance_type":INSTANCE_TYPE,
-                  "zone":"pek2",
+                  "image_id":imageId,
+                  "instance_type":instanceType,
+                  "zone":zoneDc,
                   "instance_name":"twLG",
                   "login_mode":"passwd",
                   "login_passwd":"Soasta2006",
@@ -146,10 +158,10 @@ var server = http.createServer(function(req,res){
 		   case "/create_eip" : 
 			  var modJsonEip =  
 				  {"count":mod,
-              	   "bandwidth":BANDWIDTH,
+              	   "bandwidth":eipBandwidth,
                    "billing_mode":"traffic",
               	   "eip_name":"twEIP",
-                   "zone":"pek2",
+                   "zone":zoneDc,
                    "signature_version":1,                     
                    "signature_method":"HmacSHA256",              
                    "version":1,                              
