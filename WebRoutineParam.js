@@ -13,8 +13,6 @@ var uri = "/iaas/";
 var keyString = csv.split(",")[0];
 var access_key_id = keyString.substring(keyString.indexOf("'")+1,keyString.lastIndexOf("'"));
 /////////////////////////////////////////////////////////////////////////////////////
-const INSTANCE_TYPE = "c2m4";
-const BANDWIDTH = 10;
 const OVERWRITE_FILE = true;
 const PATH = "Beijing Qingcloud Loc #2";      //"QingCloud China Beijing 2";
 const REGION = "pek2";
@@ -41,8 +39,8 @@ var body = '<html>'+
 	'<u1>NumInstances,Bandwidth,ZoneName,InstanceType,ImageID</u1><hr/>'+
 	'<img src="http://www.soasta.com/wp-content/uploads/2015/05/cloudtest-pp-2.jpg" width="800" height="600"></div>'+
     '<form action="/upload" method="post">'+           
-    '<textarea name="text" rows="4" cols="30">2,10,pek2,c4m8,img-1wbv1ydv</textarea>'+
-    '<input type="submit" value="Submit text" style="height:20px;width:120px" />'+
+    '<textarea name="text" rows="2" cols="30">2,10,pek2,c4m8,img-1wbv1ydv</textarea>'+
+    '<input type="submit" value="Submit" style="height:20px;width:80px" />'+
     '</form>'+
 	'<form action="/create_instance" method="post">'+           
 	'<input type="submit" value="Create_instance" style="height:20px;width:120px" />'+
@@ -51,34 +49,34 @@ var body = '<html>'+
 	'<input type="submit" value="Create_eip" style="height:20px;width:120px" />'+
     '</form>'+
 	'<form action="/describe_instance" method="post">'+           
-	'<input type="submit" value="Describe_instance" style="height:20px;width:120px;background:#f00" />'+
+	'<input type="submit" value="Describe_instance" style="height:20px;width:120px;background:#CAFF70" />'+
     '</form>'+
 	'<form action="/describe_eip" method="post">'+           
-	'<input type="submit" value="Describe_eip" style="height:20px;width:120px;background:#f00" />'+
+	'<input type="submit" value="Describe_eip" style="height:20px;width:120px;background:#CAFF70" />'+
     '</form>'+
 	'<form action="/associate_eip" method="post">'+           
-	'<input type="submit" value="Associate_eip" style="height:20px;width:120px" />'+
+	'<input type="submit" value="Associate_eip" style="height:20px;width:120px;background:#EEEE00" />'+
     '</form>'+
 	'<form action="/stop_instance" method="post">'+           
-	'<input type="submit" value="Stop_instance" style="height:20px;width:120px" />'+
+	'<input type="submit" value="Stop_instance" style="height:20px;width:120px;background:#EECFA1" />'+
     '</form>'+
 	'<form action="/start_instance" method="post">'+           
-	'<input type="submit" value="Start_instance" style="height:20px;width:120px" />'+
+	'<input type="submit" value="Start_instance" style="height:20px;width:120px;background:#EECFA1" />'+
     '</form>'+
 	'<form action="/restart_instance" method="post">'+           
-	'<input type="submit" value="Restart_instance" style="height:20px;width:120px" />'+
+	'<input type="submit" value="Restart_instance" style="height:20px;width:120px;background:#EECFA1" />'+
     '</form>'+
 	'<form action="/dissociate_eip" method="post">'+           
-	'<input type="submit" value="Dissociate_eip" style="height:20px;width:120px" />'+
+	'<input type="submit" value="Dissociate_eip" style="height:20px;width:120px;background:#A2B5CD" />'+
     '</form>'+
 	'<form action="/delete_instance" method="post">'+           
-	'<input type="submit" value="Delete_instance" style="height:20px;width:120px" />'+
+	'<input type="submit" value="Delete_instance" style="height:20px;width:120px;background:#A2B5CD" />'+
     '</form>'+
 	'<form action="/delete_eip" method="post">'+           
-	'<input type="submit" value="Delete_eip" style="height:20px;width:120px" />'+
+	'<input type="submit" value="Delete_eip" style="height:20px;width:120px;background:#A2B5CD" />'+
     '</form>'+
 	'<form action="/generate_xml" method="post">'+           
-	'<input type="submit" value="Generate_xml" style="height:20px;width:120px" />'+
+	'<input type="submit" value="Generate_xml" style="height:20px;width:120px;background:#8E388E;color:#FFFFFF" />'+
     '</form>'+
 	'</body>'+
     '</html>';
@@ -104,11 +102,11 @@ var server = http.createServer(function(req,res){
 		         //the following variables are global variables, can't use var here
                  inputArr = finalTxt.split(',');
 		         numOfInstances = inputArr[0];
+				 //setting default values
 		         eipBandwidth = (inputArr[1] == undefined)?10:parseInt(inputArr[1]) ;
 		         zoneDc = (inputArr[2] == undefined)?'pek2':inputArr[2];
 		         instanceType = (inputArr[3] == undefined)?'c4m8':inputArr[3];
-		         imageId = (inputArr[4] == undefined)?'img-1wbv1ydv':inputArr[4];		
-                 console.log(numOfInstances+" "+eipBandwidth+" "+zoneDc+" "+instanceType+" "+imageId);	
+		         imageId = (inputArr[4] == undefined)?'img-1wbv1ydv':inputArr[4];			
 				 jsonObj['/create_instance'].instance_type = instanceType;
 				 jsonObj['/create_instance'].image_id = imageId;				 
                  jsonObj['/create_eip'].bandwidth =eipBandwidth;
@@ -121,6 +119,8 @@ var server = http.createServer(function(req,res){
                  mod = NUM - div*10;        
 				 console.log(NUM,div,mod);
 	   	   		 res.write("Creating "+numOfInstances+" LGs");
+				 var inputBoxStr = body.substring(body.indexOf('"30">')+5,body.lastIndexOf("</textarea>"));
+				 body = body.replace(inputBoxStr,numOfInstances+","+eipBandwidth+","+zoneDc+","+instanceType+","+imageId);
 	   	   		 res.end(body);   	   		
 	   	   break;
 	   	   	 
