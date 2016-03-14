@@ -3,8 +3,8 @@ var QingParameter = require('./QingParameter.js');
 var qString = require('querystring');
 
 
-function command2Qc(myParameter,method,uri,callback){
-   QingParameter.getString2Sign(myParameter,method,uri,function(queryString){
+function command2Qc(myParameter,method,uri,secret,callback){
+      QingParameter.getString2Sign(myParameter,method,uri,secret,function(queryString){
       console.log("query string with signature is:\n"+queryString);
       
       var options = {

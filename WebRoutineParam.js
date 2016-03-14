@@ -5,13 +5,15 @@ var url = require('url');
 var generateXML = require('./GenerateXML.js');
 var host = "127.0.0.1";
 var port = 8080;
-var csv = fs.readFileSync("../files/access_key_soasta.csv").toString();
+var csv = fs.readFileSync("../files/access_key_soasta.csv").toString();   //read key from default locations
 var querystring = require('querystring');
 var command2Qc = require('./QingcloudReq.js');
 var method = "GET";
 var uri = "/iaas/";
 var keyString = csv.split(",")[0];
+var AccessString = csv.split(",")[1]; 
 var access_key_id = keyString.substring(keyString.indexOf("'")+1,keyString.lastIndexOf("'"));
+var secret = AccessString.substring(AccessString.indexOf("'")+1,AccessString.lastIndexOf("'"));
 /////////////////////////////////////////////////////////////////////////////////////
 const OVERWRITE_FILE = true;
 const PATH = "Beijing Qingcloud Loc #2";      //"QingCloud China Beijing 2";
@@ -36,11 +38,10 @@ var body = '<html>'+
     '</head>'+
     '<body>'+  
 	'<h1>Welcome to use NodeJs Routine for Qingcloud API</h1>'+
-	'<form enctype="multipart/form-data" action="" method="post">'+
-  '<input type="file" id="choosefile" />'+
-  '<input type="file"  id="f" style="display:none;" />'+
-  '<input type="submit" value="UploadKeyCSV" id="submitBtn" />'+
-  '</form><br />'+
+	'<form enctype="multipart/form-data" action="/UploadKeyCSV" method="post">'+
+    '<input type="file" name ="upload" id="choosefile" /><br>'+
+    '<input type="submit" value="UploadKeyCSV" id="submitBtn" />'+
+    '</form><br />'+
 //	'MainAccount<input type="radio" checked="checked" name="csvPath" value="../files/access_key_soasta_main.csv" />'+
 //	'PeAccount<input type="radio" name="csvPath" value="../files/access_key_soasta.csv" /><br /><br />'+
 	'<u1>NumInstances,Bandwidth,ZoneName,InstanceType,ImageID</u1><hr/>'+
@@ -105,6 +106,18 @@ var server = http.createServer(function(req,res){
 		//after every request, send response
 		res.writeHead("200",{"content-type":"text/html"});
 	   switch (pathName){
+		   case "/UploadKeyCSV":
+		         if (finalTxt.indexOf("id: '") == -1 || finalTxt.indexOf("key: '") ==-1) {
+					 res.write("Invalid CSV File, Please re-upload!");
+					 res.end(body);
+				 } else {
+		         access_key_id = finalTxt.substring(finalTxt.indexOf("id: '")+5,finalTxt.indexOf("id: '")+25);
+                 secret = finalTxt.substring(finalTxt.indexOf("key: '")+6,finalTxt.indexOf("key: '")+46);
+				 res.write("Credential loaded!");
+				 }
+				 res.end(body);
+		   break;
+		   
 	   	   case "/upload" : 
 		         //the following variables are global variables, can't use var here
                  inputArr = finalTxt.split(',');
@@ -156,7 +169,7 @@ var server = http.createServer(function(req,res){
 					}
                  myParameterCreateArr.push(modJsonIns);
 				 myParameterCreateArr.forEach(function(myParameterCreate){
-                 command2Qc.command2Qc(myParameterCreate,method,uri,function(resObj){         	
+                 command2Qc.command2Qc(myParameterCreate,method,uri,secret,function(resObj){         	
                     });
                  });  
  
@@ -183,7 +196,7 @@ var server = http.createServer(function(req,res){
 					}
 				 myParameterCreateArr.push(modJsonEip);
 				 myParameterCreateArr.forEach(function(myParameterCreate){
-                 command2Qc.command2Qc(myParameterCreate,method,uri,function(resObj){      	
+                 command2Qc.command2Qc(myParameterCreate,method,uri,secret,function(resObj){      	
                   });
                  });  
            		   
@@ -192,7 +205,7 @@ var server = http.createServer(function(req,res){
 		   case "/describe_instance" : 
 		      
 	   	     res.write("describe instance =======> ");
-             command2Qc.command2Qc(jsonObj[pathName],method,uri,function(resObj){
+             command2Qc.command2Qc(jsonObj[pathName],method,uri,secret,function(resObj){
 	         var InsSetLength = resObj.instance_set.length;
 	         var InsArr = [];
 	         if (OVERWRITE_FILE) {
@@ -214,7 +227,7 @@ var server = http.createServer(function(req,res){
 		   case "/describe_eip" : 
 		      
 	   	      res.write("describe eip =======> ");
-            command2Qc.command2Qc(jsonObj[pathName],method,uri,function(resObj){
+            command2Qc.command2Qc(jsonObj[pathName],method,uri,secret,function(resObj){
             	var eipSetLength = resObj.eip_set.length;
             	var eipArr = [];
             	if (OVERWRITE_FILE){
@@ -251,7 +264,7 @@ var server = http.createServer(function(req,res){
               		console.log(i);
               		jsonObj[pathName].eip = eipId[i];
                     jsonObj[pathName].instance = insId[i];
-              		command2Qc.command2Qc(jsonObj[pathName],method,uri,function(resObj){
+              		command2Qc.command2Qc(jsonObj[pathName],method,uri,secret,function(resObj){
               	
                          });
               	}
@@ -272,7 +285,7 @@ var server = http.createServer(function(req,res){
               	}
               var paraQuery = querystring.stringify(jsonObj[pathName]) + bodytxt;
               var param = querystring.parse(paraQuery);           
-              command2Qc.command2Qc(param,method,uri,function(resObj){             	
+              command2Qc.command2Qc(param,method,uri,secret,function(resObj){             	
               });
 
 		     break;
@@ -290,7 +303,7 @@ var server = http.createServer(function(req,res){
               	}
               var paraQuery = querystring.stringify(jsonObj[pathName]) + bodytxt;
               var param = querystring.parse(paraQuery);           
-              command2Qc.command2Qc(param,method,uri,function(resObj){         	
+              command2Qc.command2Qc(param,method,uri,secret,function(resObj){         	
               });
 
 		   break;
@@ -308,7 +321,7 @@ var server = http.createServer(function(req,res){
               	}
               var paraQuery = querystring.stringify(jsonObj[pathName]) + bodytxt;
               var param = querystring.parse(paraQuery);
-              command2Qc.command2Qc(param,method,uri,function(resObj){
+              command2Qc.command2Qc(param,method,uri,secret,function(resObj){
               	
               });
               	   
@@ -333,7 +346,7 @@ var server = http.createServer(function(req,res){
               	}
               var paraQuery = querystring.stringify(jsonObj[pathName]) + bodytxt;
               var param = querystring.parse(paraQuery);
-              command2Qc.command2Qc(param,method,uri,function(resObj){             
+              command2Qc.command2Qc(param,method,uri,secret,function(resObj){             
                       });
                }
               		   
@@ -352,7 +365,7 @@ var server = http.createServer(function(req,res){
               	}
               var paraQuery = querystring.stringify(jsonObj[pathName]) + bodytxt;
               var param = querystring.parse(paraQuery);              
-              command2Qc.command2Qc(param,method,uri,function(resObj){           	
+              command2Qc.command2Qc(param,method,uri,secret,function(resObj){           	
               });	   
 		   
 		   break;
@@ -374,7 +387,7 @@ var server = http.createServer(function(req,res){
               }
               var paraQuery = querystring.stringify(jsonObj[pathName]) + bodytxt;
 			  var param = querystring.parse(paraQuery); 
-              command2Qc.command2Qc(param,method,uri,function(resObj){            
+              command2Qc.command2Qc(param,method,uri,secret,function(resObj){            
                       });
 		   
 		   break;
