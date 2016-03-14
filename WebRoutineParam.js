@@ -29,8 +29,8 @@ var body = '<html>'+
 	'<style type="text/css">'+
       'img{'+
          'position:absolute;'+
-         'left:600px;'+
-         'top:200px;'+
+         'left:400px;'+
+         'top:250px;'+
          '}'+
     '</style>'+
     '</head>'+
