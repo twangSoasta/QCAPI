@@ -36,8 +36,13 @@ var body = '<html>'+
     '</head>'+
     '<body>'+  
 	'<h1>Welcome to use NodeJs Routine for Qingcloud API</h1>'+
-	'MainAccount<input type="radio" checked="checked" name="csvPath" value="../files/access_key_soasta_main.csv" />'+
-	'PeAccount<input type="radio" name="csvPath" value="../files/access_key_soasta.csv" /><br /><br />'+
+	'<form enctype="multipart/form-data" action="" method="post">'+
+  '<input type="file" id="choosefile" />'+
+  '<input type="file"  id="f" style="display:none;" />'+
+  '<input type="submit" value="UploadKeyCSV" id="submitBtn" />'+
+  '</form><br />'+
+//	'MainAccount<input type="radio" checked="checked" name="csvPath" value="../files/access_key_soasta_main.csv" />'+
+//	'PeAccount<input type="radio" name="csvPath" value="../files/access_key_soasta.csv" /><br /><br />'+
 	'<u1>NumInstances,Bandwidth,ZoneName,InstanceType,ImageID</u1><hr/>'+
 	'<img src="http://www.soasta.com/wp-content/uploads/2015/05/cloudtest-pp-2.jpg" width="800" height="600"></div>'+
     '<form action="/upload" method="post">'+           
