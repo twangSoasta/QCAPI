@@ -2,6 +2,8 @@ var http = require('http');
 var fs = require('fs');
 var url = require('url');
 var zlib = require('zlib');
+var zip = require('node-native-zip');
+var mime = require('mime');
 //var formidable = require('formidable');
 var generateXML = require('./GenerateXML.js');
 var host = "127.0.0.1";
@@ -87,7 +89,7 @@ var body = '<html>'+
 	'<form action="/generate_xml" method="post">'+           
 	'<input type="submit" value="Generate_xml" style="height:20px;width:120px;background:#8E388E;color:#FFFFFF" />'+
     '</form>'+
-	'<form action="/download_xml" method="post">'+           
+	'<form action="/archive.zip" method="post">'+           
 	'<input type="submit" value="Download_xml" style="height:20px;width:120px;background:#8E388E;color:#FFFFFF" />'+
     '</form>'+
 	'</body>'+
@@ -106,8 +108,8 @@ var server = http.createServer(function(req,res){
 	req.on("end",function(){
 		var finalTxt = decodeURIComponent(postData.toString().substring(5));
 		console.log("post text is: ",finalTxt);
-		//after every request, send response
-		res.writeHead("200",{"content-type":"text/html"});
+		//after every request, send response, header shared by both of the routine below
+		res.writeHeader("200",{"content-type":"text/html"});   
 	   switch (pathName){
 		   case "/UploadKeyCSV":
 		         if (finalTxt.indexOf("id: '") == -1 || finalTxt.indexOf("key: '") ==-1) {
@@ -398,19 +400,29 @@ var server = http.createServer(function(req,res){
 		   case "/generate_xml" :
 		      generateXML.generateXML(PATH, REGION, securityGroup);   
 			  res.write("LG.xml and twMonServer.xml file generated");
-              res.end(body);  			   	   
+              res.end(body);  	
+              var archive = new zip();	
+              archive.addFiles([
+			  {name:"LG.xml",path:"./LG.xml"},
+			  {name:"twMonServer.xml",path:"./twMonServer.xml"},
+			  {name:"twLGMon.xml",path:"./twLGMon.xml"}			  
+			  ],function(err){
+				if (err) return console.log(err);  
+				var buff = archive.toBuffer();
+				fs.writeFileSync("./archive.zip",buff);
+				console.log("3 files zipped!");
+			  });				  
            break;
 		   
-		   case "/download_xml":
-		      const gzip = zlib.createGzip();			  
-			  var stats = fs.statSync("./LG.xml");   
+		   case "/archive.zip":
+		//      const gzip = zlib.createGzip();		
+	    	  var stats = fs.statSync("./archive.zip");  			  
 		      res.writeHeader('Content-Length', stats["size"]);
-              res.writeHeader('Content-Type', 'application/file');
-              res.writeHeader(200,'Content-Disposition', 'attachment; filename=LG.xml.gz');
-			  var rd = fs.createReadStream("./LG.xml");		  
-			  rd.pipe(gzip).pipe(res);	
-      //      var rd1 = fs.createReadStream("./twMonServer.xml");		  
-      //	  rd1.pipe(gzip).pipe(res);			  
+              res.writeHeader('Content-Type', mime.lookup("./archive.zip"));
+              res.writeHeader('Content-Disposition', 'attachment; filename=archive.zip');
+			  var rd = fs.createReadStream("./archive.zip");		  
+			  rd.pipe(res);
+			  
 		   break;
 		   
 		   
