@@ -19,8 +19,6 @@ var access_key_id = keyString.substring(keyString.indexOf("'")+1,keyString.lastI
 var secret = AccessString.substring(AccessString.indexOf("'")+1,AccessString.lastIndexOf("'"));
 /////////////////////////////////////////////////////////////////////////////////////
 const OVERWRITE_FILE = true;
-//const PATH = "Beijing Qingcloud Loc #2";      //"QingCloud China Beijing 2";
-//const REGION = "pek2";
 const securityGroup = "sg-u279b2do";     //"sg-ewbcbab5";
 /////////////////////////////////////////////////////////////////////////////////////
 var json = fs.readFileSync("./parameter.json").toString(); 
@@ -47,17 +45,17 @@ var body = '<html>'+
     '</form><br />'+
 //	'MainAccount<input type="radio" checked="checked" name="csvPath" value="../files/access_key_soasta_main.csv" />'+
 //	'PeAccount<input type="radio" name="csvPath" value="../files/access_key_soasta.csv" /><br /><br />'+
-	'<u1>NumInstances,Bandwidth,ZoneName,InstanceType,ImageID</u1><hr/>'+
+	'<u1>NumInstances,Bandwidth,ZoneName,InstanceType,ImageID,ServerListLocation</u1><hr/>'+
 	'<img src="http://www.soasta.com/wp-content/uploads/2015/05/cloudtest-pp-2.jpg" width="800" height="600"></div>'+
     '<form action="/upload" method="post">'+           
     '<textarea name="text" rows="2" cols="50">2,10,pek2,c4m8,img-1wbv1ydv,Beijing Qingcloud Loc #2</textarea>'+
     '<input type="submit" value="Submit" style="height:20px;width:80px" />'+
     '</form>'+
 	'<form action="/create_instance" method="post">'+           
-	'<input type="submit" value="Create_instance" style="height:20px;width:120px" />'+
+	'<input type="submit" value="Create_instance" style="height:20px;width:120px;background:#FFC0CB" />'+
     '</form>'+
 	'<form action="/create_eip" method="post">'+           
-	'<input type="submit" value="Create_eip" style="height:20px;width:120px" />'+
+	'<input type="submit" value="Create_eip" style="height:20px;width:120px;background:#FFC0CB" />'+
     '</form>'+
 	'<form action="/describe_instance" method="post">'+           
 	'<input type="submit" value="Describe_instance" style="height:20px;width:120px;background:#CAFF70" />'+
