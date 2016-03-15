@@ -6,7 +6,7 @@ var zip = require('node-native-zip');
 var mime = require('mime');
 //var formidable = require('formidable');
 var generateXML = require('./GenerateXML.js');
-var host = "127.0.0.1";
+var host = "0.0.0.0";
 var port = 8080;
 var csv = fs.readFileSync("../files/access_key_soasta.csv").toString();   //read key from default locations
 var querystring = require('querystring');
@@ -116,6 +116,9 @@ var server = http.createServer(function(req,res){
 				 } else {
 		         access_key_id = finalTxt.substring(finalTxt.indexOf("id: '")+5,finalTxt.indexOf("id: '")+25);
                  secret = finalTxt.substring(finalTxt.indexOf("key: '")+6,finalTxt.indexOf("key: '")+46);
+				 for (i in jsonObj) {
+	                jsonObj[i].access_key_id = access_key_id;
+                 };	
 				 res.write("Credential loaded!");
 				 }
 				 res.end(body);
@@ -137,7 +140,6 @@ var server = http.createServer(function(req,res){
 				 jsonObj['/create_instance'].image_id = imageId;				 
                  jsonObj['/create_eip'].bandwidth =eipBandwidth;
                  for (i in jsonObj) {
-	                jsonObj[i].access_key_id = access_key_id;
 					jsonObj[i].zone = zoneDc;
                  };				 
                  NUM = parseInt(numOfInstances);	   //assuming upload will always happen before create
@@ -418,7 +420,7 @@ var server = http.createServer(function(req,res){
 		   case "/archive.zip":
 		//      const gzip = zlib.createGzip();		
 	    	  var stats = fs.statSync("./archive.zip");  			  
-		      res.writeHeader('Content-Length', stats["size"]);
+		//      res.writeHeader('Content-Length', stats["size"]);
               res.writeHeader('Content-Type', mime.lookup("./archive.zip"));
               res.writeHeader('Content-Disposition', 'attachment; filename=archive.zip');
 			  var rd = fs.createReadStream("./archive.zip");		  

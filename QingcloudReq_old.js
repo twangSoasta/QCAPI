@@ -17,16 +17,16 @@ function command2Qc(myParameter,method,uri,secret,callback){
       options.path = uri + "?" + queryString;
       options.method = method;
       
-      var req = https.request(options, function(res){
+      var req = https.request(options, (res) => {
         console.log('statusCode: ', res.statusCode);
         console.log('headers: ', res.headers);
         console.log("********************************************************************");
       var body = "";  
-      res.on('data', function(d){
+      res.on('data', (d) => {
         //  process.stdout.write("stdout\n"+d+"\n");
      	  body += d;    	        
       });
-	  res.on('end',function(){
+	  res.on('end',()=>{
 	     var dObj = JSON.parse(body);
 		 if (dObj.ret_code !== 0) {
 	        console.log("Error!response body is:\n"+JSON.stringify(dObj));
@@ -39,7 +39,7 @@ function command2Qc(myParameter,method,uri,secret,callback){
       });
       req.end();
       
-      req.on('error', function(e){
+      req.on('error', (e) => {
         console.error(e);
       });
       
