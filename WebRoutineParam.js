@@ -1,6 +1,7 @@
 var http = require('http');
 var fs = require('fs');
 var url = require('url');
+var zlib = require('zlib');
 //var formidable = require('formidable');
 var generateXML = require('./GenerateXML.js');
 var host = "127.0.0.1";
@@ -86,10 +87,12 @@ var body = '<html>'+
 	'<form action="/generate_xml" method="post">'+           
 	'<input type="submit" value="Generate_xml" style="height:20px;width:120px;background:#8E388E;color:#FFFFFF" />'+
     '</form>'+
+	'<form action="/download_xml" method="post">'+           
+	'<input type="submit" value="Download_xml" style="height:20px;width:120px;background:#8E388E;color:#FFFFFF" />'+
+    '</form>'+
 	'</body>'+
     '</html>';
 	
-
 
 var server = http.createServer(function(req,res){
 	var pathName = url.parse(req.url).pathname; 
@@ -393,10 +396,23 @@ var server = http.createServer(function(req,res){
 		   break;
 		   
 		   case "/generate_xml" :
-		      generateXML.generateXML(PATH, REGION, securityGroup);          
-	   	      res.write("LG.xml and twMonServer.xml file generated");
-	   	      res.end(body);	
+		      generateXML.generateXML(PATH, REGION, securityGroup);   
+			  res.write("LG.xml and twMonServer.xml file generated");
+              res.end(body);  			   	   
            break;
+		   
+		   case "/download_xml":
+		      const gzip = zlib.createGzip();			  
+			  var stats = fs.statSync("./LG.xml");   
+		      res.writeHeader('Content-Length', stats["size"]);
+              res.writeHeader('Content-Type', 'application/file');
+              res.writeHeader(200,'Content-Disposition', 'attachment; filename=LG.xml.gz');
+			  var rd = fs.createReadStream("./LG.xml");		  
+			  rd.pipe(gzip).pipe(res);	
+      //      var rd1 = fs.createReadStream("./twMonServer.xml");		  
+      //	  rd1.pipe(gzip).pipe(res);			  
+		   break;
+		   
 		   
 	   	   default:	              
 			   res.write("You are hitting the default page"); 
