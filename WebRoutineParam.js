@@ -19,8 +19,8 @@ var access_key_id = keyString.substring(keyString.indexOf("'")+1,keyString.lastI
 var secret = AccessString.substring(AccessString.indexOf("'")+1,AccessString.lastIndexOf("'"));
 /////////////////////////////////////////////////////////////////////////////////////
 const OVERWRITE_FILE = true;
-const PATH = "Beijing Qingcloud Loc #2";      //"QingCloud China Beijing 2";
-const REGION = "pek2";
+//const PATH = "Beijing Qingcloud Loc #2";      //"QingCloud China Beijing 2";
+//const REGION = "pek2";
 const securityGroup = "sg-u279b2do";     //"sg-ewbcbab5";
 /////////////////////////////////////////////////////////////////////////////////////
 var json = fs.readFileSync("./parameter.json").toString(); 
@@ -35,7 +35,7 @@ var body = '<html>'+
       'img{'+
          'position:absolute;'+
          'left:400px;'+
-         'top:250px;'+
+         'top:280px;'+
          '}'+
     '</style>'+
     '</head>'+
@@ -50,7 +50,7 @@ var body = '<html>'+
 	'<u1>NumInstances,Bandwidth,ZoneName,InstanceType,ImageID</u1><hr/>'+
 	'<img src="http://www.soasta.com/wp-content/uploads/2015/05/cloudtest-pp-2.jpg" width="800" height="600"></div>'+
     '<form action="/upload" method="post">'+           
-    '<textarea name="text" rows="2" cols="30">2,10,pek2,c4m8,img-1wbv1ydv</textarea>'+
+    '<textarea name="text" rows="2" cols="50">2,10,pek2,c4m8,img-1wbv1ydv,Beijing Qingcloud Loc #2</textarea>'+
     '<input type="submit" value="Submit" style="height:20px;width:80px" />'+
     '</form>'+
 	'<form action="/create_instance" method="post">'+           
@@ -131,7 +131,10 @@ var server = http.createServer(function(req,res){
 		         eipBandwidth = (inputArr[1] == undefined)?10:parseInt(inputArr[1]) ;
 		         zoneDc = (inputArr[2] == undefined)?'pek2':inputArr[2];
 		         instanceType = (inputArr[3] == undefined)?'c4m8':inputArr[3];
-		         imageId = (inputArr[4] == undefined)?'img-1wbv1ydv':inputArr[4];			
+		         imageId = (inputArr[4] == undefined)?'img-1wbv1ydv':inputArr[4];
+                 path = (inputArr[5] == undefined)?'Beijing Qingcloud Loc #2':inputArr[5];		
+                 path = path.replace(/\+/g,' '); 
+				 console.log("path is: "+path);		 
 				 jsonObj['/create_instance'].instance_type = instanceType;
 				 jsonObj['/create_instance'].image_id = imageId;				 
                  jsonObj['/create_eip'].bandwidth =eipBandwidth;
@@ -144,13 +147,13 @@ var server = http.createServer(function(req,res){
                  mod = NUM - div*10;        
 				 console.log(NUM,div,mod);
 	   	   		 res.write("Creating "+numOfInstances+" LGs");
-				 var inputBoxStr = body.substring(body.indexOf('"30">')+5,body.lastIndexOf("</textarea>"));
-				 body = body.replace(inputBoxStr,numOfInstances+","+eipBandwidth+","+zoneDc+","+instanceType+","+imageId);
+				 var inputBoxStr = body.substring(body.indexOf('"50">')+5,body.lastIndexOf("</textarea>"));
+				 body = body.replace(inputBoxStr,numOfInstances+","+eipBandwidth+","+zoneDc+","+instanceType+","+imageId+","+path);
 	   	   		 res.end(body);   	   		
 	   	   break;
 	   	   	 
 	   	   case "/create_instance" : 
-		         console.log(mod+" "+numOfInstances+" "+eipBandwidth+" "+zoneDc+" "+instanceType+" "+imageId);	
+		         console.log(mod+" "+numOfInstances+" "+eipBandwidth+" "+zoneDc+" "+instanceType+" "+imageId+" "+path);	
 		         var modJsonIns = 
 				 {"count":mod,
                   "image_id":imageId,
@@ -398,7 +401,7 @@ var server = http.createServer(function(req,res){
 		   break;
 		   
 		   case "/generate_xml" :
-		      generateXML.generateXML(PATH, REGION, securityGroup);   
+		      generateXML.generateXML(path, zoneDc, securityGroup);   
 			  res.write("LG.xml and twMonServer.xml file generated");
               res.end(body);  	
               var archive = new zip();	
