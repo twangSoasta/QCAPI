@@ -8,20 +8,21 @@ var mime = require('mime');
 var generateXML = require('./GenerateXML.js');
 var host = "0.0.0.0";
 var port = 8080;
-var csv = fs.readFileSync("../files/access_key_soasta.csv").toString();   //read key from default locations
 var querystring = require('querystring');
 var command2Qc = require('./QingcloudReq.js');
 var method = "GET";
 var uri = "/iaas/";
-var keyString = csv.split(",")[0];
-var AccessString = csv.split(",")[1]; 
-var access_key_id = keyString.substring(keyString.indexOf("'")+1,keyString.lastIndexOf("'"));
-var secret = AccessString.substring(AccessString.indexOf("'")+1,AccessString.lastIndexOf("'"));
+var currentDir = __dirname; 
+currentDir = currentDir.substring(0,currentDir.lastIndexOf("/")) + "/files/access_key_soasta.csv";
+var csv = fs.readFileSync(currentDir).toString();   //read key from default locations
+var access_key_id = csv.substring(csv.indexOf("id: '")+5,csv.indexOf("id: '")+25);
+var secret = csv.substring(csv.indexOf("key: '")+6,csv.indexOf("key: '")+46);
 /////////////////////////////////////////////////////////////////////////////////////
 const OVERWRITE_FILE = true;
 const securityGroup = "sg-u279b2do";     //"sg-ewbcbab5";
 /////////////////////////////////////////////////////////////////////////////////////
-var json = fs.readFileSync("./parameter.json").toString(); 
+var currentDir = __dirname + "/parameter.json";
+var json = fs.readFileSync(currentDir).toString(); 
 var jsonObj = JSON.parse(json);
 var NUM,div,mod;
 var path = 'Beijing Qingcloud Loc #2';   //need a initial value to not break the generate routine if upload button has not clicked before
@@ -219,12 +220,12 @@ var server = http.createServer(function(req,res){
 	         var InsSetLength = resObj.instance_set.length;
 	         var InsArr = [];
 	         if (OVERWRITE_FILE) {
-	         fs.writeFileSync('./instanceid.log',"");   //create an empty or clear the existing log
+	         fs.writeFileSync(__dirname+'/instanceid.log',"");   //create an empty or clear the existing log
 	         }
 	         resObj.instance_set.forEach(function(InsObj){
 	   	     if (InsObj.instance_name === "twLG" && InsObj.status === "running" ) {
 	   		     InsArr.push(InsObj.instance_id);
-	   		     fs.appendFileSync('./instanceid.log',InsObj.instance_id+',');
+	   		     fs.appendFileSync(__dirname+'/instanceid.log',InsObj.instance_id+',');
 	   	     }	  
 	         });
 	         console.log("InsArr:\n",InsArr); 	
@@ -241,14 +242,14 @@ var server = http.createServer(function(req,res){
             	var eipSetLength = resObj.eip_set.length;
             	var eipArr = [];
             	if (OVERWRITE_FILE){
-            	fs.writeFileSync('./eipid.log',""); 
-            	fs.writeFileSync('./eipaddr.log',""); 
+            	fs.writeFileSync(__dirname+'/eipid.log',""); 
+            	fs.writeFileSync(__dirname+'/eipaddr.log',""); 
             	}
             	   resObj.eip_set.forEach(function(eipObj){
             		  if (eipObj.eip_name === "twEIP" && (eipObj.status === "available" | eipObj.status === "associated")) {
             			  eipArr.push(eipObj.eip_addr);
-            			  fs.appendFileSync('./eipid.log',eipObj.eip_id+','); 
-            	          fs.appendFileSync('./eipaddr.log',eipObj.eip_addr+','); 
+            			  fs.appendFileSync(__dirname+'/eipid.log',eipObj.eip_id+','); 
+            	          fs.appendFileSync(__dirname+'/eipaddr.log',eipObj.eip_addr+','); 
             		  }	  
             	   });
             	   console.log("eipArr:\n",eipArr); 
@@ -262,9 +263,9 @@ var server = http.createServer(function(req,res){
 		      
 	   	      res.write("associate eip");
 	   	      res.end(body);
-              var fileEipId = fs.readFileSync('./eipid.log').toString();
+              var fileEipId = fs.readFileSync(__dirname+'/eipid.log').toString();
               var eipId = fileEipId.split(',');
-              var fileInsId = fs.readFileSync('./instanceid.log').toString();
+              var fileInsId = fs.readFileSync(__dirname+'/instanceid.log').toString();
               var insId = fileInsId.split(',');	
               console.log(eipId + "\n" + insId);
               if (eipId.length != insId.length) {
@@ -286,7 +287,7 @@ var server = http.createServer(function(req,res){
 		      
 	   	      res.write("Stopping instances");
 	   	      res.end(body);
-              var fileInsId = fs.readFileSync('./instanceid.log').toString();
+              var fileInsId = fs.readFileSync(__dirname+'/instanceid.log').toString();
               var insId = fileInsId.split(',');
 			  var bodytxt ="";
               for (i=0; i< insId.length -1;i++){
@@ -304,7 +305,7 @@ var server = http.createServer(function(req,res){
 		      
 	   	      res.write("Starting instances");
 	   	      res.end(body);
-              var fileInsId = fs.readFileSync('./instanceid.log').toString();
+              var fileInsId = fs.readFileSync(__dirname+'/instanceid.log').toString();
               var insId = fileInsId.split(',');
 			  var bodytxt ="";
               for (i=0; i< insId.length -1;i++){
@@ -322,7 +323,7 @@ var server = http.createServer(function(req,res){
 		      
 	   	      res.write("Restarting instances");
 	   	      res.end(body);
-              var fileInsId = fs.readFileSync('./instanceid.log').toString();
+              var fileInsId = fs.readFileSync(__dirname+'/instanceid.log').toString();
               var insId = fileInsId.split(',');
 			  var bodytxt = "";
               for (i=0; i< insId.length -1;i++){
@@ -341,9 +342,9 @@ var server = http.createServer(function(req,res){
 		      
 	   	      res.write("dissociate eip");
 	   	      res.end(body);
-              var fileEipId = fs.readFileSync('./eipid.log').toString();
+              var fileEipId = fs.readFileSync(__dirname+'/eipid.log').toString();
               var eipId = fileEipId.split(',');
-              var fileInsId = fs.readFileSync('./instanceid.log').toString();
+              var fileInsId = fs.readFileSync(__dirname+'/instanceid.log').toString();
               var insId = fileInsId.split(',');	
               
               if (eipId.length != insId.length) {
@@ -366,7 +367,7 @@ var server = http.createServer(function(req,res){
               
 	   	      res.write("delete instances");
 	   	      res.end(body);
-              var fileInsId = fs.readFileSync('./instanceid.log').toString();
+              var fileInsId = fs.readFileSync(__dirname+'/instanceid.log').toString();
               var insId = fileInsId.split(',');
 			  var bodytxt ="";
               for (i=0; i< insId.length -1;i++){
@@ -384,9 +385,9 @@ var server = http.createServer(function(req,res){
 		      
 	   	      res.write("delete eips");
 	   	      res.end(body);
-              var fileEipId = fs.readFileSync('./eipid.log').toString();
+              var fileEipId = fs.readFileSync(__dirname+'/eipid.log').toString();
               var eipId = fileEipId.split(',');
-              var fileInsId = fs.readFileSync('./instanceid.log').toString();
+              var fileInsId = fs.readFileSync(__dirname+'/instanceid.log').toString();
               var insId = fileInsId.split(',');	
               
               
@@ -408,24 +409,24 @@ var server = http.createServer(function(req,res){
               res.end(body);  	
               var archive = new zip();	
               archive.addFiles([
-			  {name:"LG.xml",path:"./LG.xml"},
-			  {name:"twMonServer.xml",path:"./twMonServer.xml"},
-			  {name:"twLGMon.xml",path:"./twLGMon.xml"}			  
+			  {name:"LG.xml",path:__dirname+"/LG.xml"},
+			  {name:"twMonServer.xml",path:__dirname+"/twMonServer.xml"},
+			  {name:"twLGMon.xml",path:__dirname+"/twLGMon.xml"}			  
 			  ],function(err){
 				if (err) return console.log(err);  
 				var buff = archive.toBuffer();
-				fs.writeFileSync("./archive.zip",buff);
+				fs.writeFileSync(__dirname+"/archive.zip",buff);
 				console.log("3 files zipped!");
 			  });				  
            break;
 		   
 		   case "/archive.zip":
 		//      const gzip = zlib.createGzip();		
-	    	  var stats = fs.statSync("./archive.zip");  			  
+	    	  var stats = fs.statSync(__dirname+"/archive.zip");  			  
 		//      res.writeHeader('Content-Length', stats["size"]);
-              res.writeHeader('Content-Type', mime.lookup("./archive.zip"));
+              res.writeHeader('Content-Type', mime.lookup(__dirname+"/archive.zip"));
               res.writeHeader('Content-Disposition', 'attachment; filename=archive.zip');
-			  var rd = fs.createReadStream("./archive.zip");		  
+			  var rd = fs.createReadStream(__dirname+"/archive.zip");		  
 			  rd.pipe(res);
 			  
 		   break;
