@@ -24,6 +24,8 @@ const securityGroup = "sg-u279b2do";     //"sg-ewbcbab5";
 var json = fs.readFileSync("./parameter.json").toString(); 
 var jsonObj = JSON.parse(json);
 var NUM,div,mod;
+var path = 'Beijing Qingcloud Loc #2';   //need a initial value to not break the generate routine if upload button has not clicked before
+var zoneDc = 'pek2';
 
 var body = '<html>'+                  
     '<head>'+
