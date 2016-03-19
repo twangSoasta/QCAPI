@@ -122,7 +122,7 @@ var server = http.createServer(function(req,res){
 					 res.end(body);
 				 } else {
 		         access_key_id = finalTxt.substring(finalTxt.indexOf("id: '")+5,finalTxt.indexOf("id: '")+25);
-                 secret = finalTxt.substring(finalTxt.indexOf("key: '")+6,finalTxt.indexOf("key: '")+46);
+             secret = finalTxt.substring(finalTxt.indexOf("key: '")+6,finalTxt.indexOf("key: '")+46);
 				 for (i in jsonObj) {
 	                jsonObj[i].access_key_id = access_key_id;
                  };	
