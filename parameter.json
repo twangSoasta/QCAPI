@@ -1,5 +1,5 @@
 {
-"/create_instance":    {
+"/create_LG":    {
                   "count":10,
                   "image_id":"img-1wbv1ydv",
                   "instance_type":null,

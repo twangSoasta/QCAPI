@@ -27,6 +27,7 @@ var jsonObj = JSON.parse(json);
 var NUM,div,mod;
 var path = 'Beijing Qingcloud Loc #2';   //need a initial value to not break the generate routine if upload button has not clicked before
 var zoneDc = 'pek2';
+var RSDone = false;
 
 var body = '<html>'+                  
     '<head>'+
@@ -51,11 +52,14 @@ var body = '<html>'+
 	'<u1>NumInstances,Bandwidth,ZoneName,InstanceType,ImageID,ServerListLocation</u1><hr/>'+
 	'<img src="http://www.soasta.com/wp-content/uploads/2015/05/cloudtest-pp-2.jpg" width="800" height="600"></div>'+
     '<form action="/upload" method="post">'+           
-    '<textarea name="text" rows="2" cols="50">2,10,pek2,c4m8,img-1wbv1ydv,Beijing Qingcloud Loc #2</textarea>'+
+    '<textarea name="text" rows="2" cols="65">2,10,pek2,c4m8,img-1wbv1ydv,img-wska67bq,Beijing Qingcloud Loc #2</textarea>'+
     '<input type="submit" value="Submit" style="height:20px;width:80px" />'+
     '</form>'+
-	'<form action="/create_instance" method="post">'+           
-	'<input type="submit" value="Create_instance" style="height:20px;width:120px;background:#FFC0CB" />'+
+	'<form action="/create_RS" method="post">'+           
+	'<input type="submit" value="Create_RS" style="height:20px;width:120px;background:#FFC0CB" />'+
+    '</form>'+
+  '<form action="/create_LG" method="post">'+           
+	'<input type="submit" value="Create_LG" style="height:20px;width:120px;background:#FFC0CB" />'+
     '</form>'+
 	'<form action="/create_eip" method="post">'+           
 	'<input type="submit" value="Create_eip" style="height:20px;width:120px;background:#FFC0CB" />'+
@@ -129,18 +133,26 @@ var server = http.createServer(function(req,res){
 		   
 	   	   case "/upload" : 
 		         //the following variables are global variables, can't use var here
-                 inputArr = finalTxt.split(',');
+             inputArr = finalTxt.split(',');
 		         numOfInstances = inputArr[0];
-				 //setting default values
+             div51 = Math.floor(numOfInstances/51);
+             rsNum = div51 + 1;  
+             lgNum = numOfInstances - rsNum;
+             if ( (numOfInstances - 51*div51) == 1) {
+                numOfInstances++;
+                res.write("Invalid Number of LGs - 1, 52, 103, 154..., etc, will increase by 1<br \>");
+             	} 		         
+				     //setting default values
 		         eipBandwidth = (inputArr[1] == undefined)?10:parseInt(inputArr[1]) ;
 		         zoneDc = (inputArr[2] == undefined)?'pek2':inputArr[2];
 		         instanceType = (inputArr[3] == undefined)?'c4m8':inputArr[3];
 		         imageId = (inputArr[4] == undefined)?'img-1wbv1ydv':inputArr[4];
-                 path = (inputArr[5] == undefined)?'Beijing Qingcloud Loc #2':inputArr[5];		
-                 path = path.replace(/\+/g,' '); 
-				 console.log("path is: "+path);		 
-				 jsonObj['/create_instance'].instance_type = instanceType;
-				 jsonObj['/create_instance'].image_id = imageId;				 
+		         imageIdRS = (inputArr[5] == undefined)?'img-wska67bq':inputArr[5];
+             path = (inputArr[6] == undefined)?'Beijing Qingcloud Loc #2':inputArr[6];		
+             path = path.replace(/\+/g,' '); 
+				     console.log("path is: "+path);		 
+				     jsonObj['/create_LG'].instance_type = instanceType;
+				     jsonObj['/create_LG'].image_id = imageId;				 
                  jsonObj['/create_eip'].bandwidth =eipBandwidth;
                  for (i in jsonObj) {
 					jsonObj[i].zone = zoneDc;
@@ -150,15 +162,46 @@ var server = http.createServer(function(req,res){
                  mod = NUM - div*10;        
 				 console.log(NUM,div,mod);
 	   	   		 res.write("Creating "+numOfInstances+" LGs");
-				 var inputBoxStr = body.substring(body.indexOf('"50">')+5,body.lastIndexOf("</textarea>"));
-				 body = body.replace(inputBoxStr,numOfInstances+","+eipBandwidth+","+zoneDc+","+instanceType+","+imageId+","+path);
+				 var inputBoxStr = body.substring(body.indexOf('"65">')+5,body.lastIndexOf("</textarea>"));
+				 body = body.replace(inputBoxStr,numOfInstances+","+eipBandwidth+","+zoneDc+","+instanceType+","+imageId+","+imageIdRS+","+path);
 	   	   		 res.end(body);   	   		
 	   	   break;
+	   	   
+	   	   case "/create_RS":
+		        console.log(mod+" "+numOfInstances+" "+eipBandwidth+" "+zoneDc+" "+instanceType+" "+imageId+" "+imageIdRS+" "+path);	
+		        modLG = mod - rsNum;
+		        console.log("modLG:"+modLG+"  "+"rsNum:"+rsNum); 
+		        res.write("Creating RS in progress");
+	   	   	  res.end(body);
+		        var modJsonInsRS = 
+				         {"count":rsNum,
+                  "image_id":imageIdRS,
+                  "instance_type":instanceType,
+                  "zone":zoneDc,
+                  "instance_name":"twRS",
+                  "login_mode":"passwd",
+                  "login_passwd":"Soasta2006",
+                  "vxnets.1":"vxnet-0",
+                  "signature_version":1,                     
+                  "signature_method":"HmacSHA256",              
+                  "version":1,                              
+                  "access_key_id":access_key_id,   
+                  "action":"RunInstances",            
+                  "time_stamp":"2013-08-27T14:30:10Z"};
+		        command2Qc.command2Qc(modJsonInsRS,method,uri,secret,function(resObj){         	
+                    });
+            RSDone = true;
+          
+		     break;
 	   	   	 
-	   	   case "/create_instance" : 
-		         console.log(mod+" "+numOfInstances+" "+eipBandwidth+" "+zoneDc+" "+instanceType+" "+imageId+" "+path);	
-		         var modJsonIns = 
-				 {"count":mod,
+	   	   case "/create_LG" : 
+		         
+		         if (!RSDone) {
+		      	    res.write("Please go back and create RSs 1st!");
+		      	    res.end(body);
+		      	 } else {
+		         var modJsonInsLG = 
+				         {"count":modLG,
                   "image_id":imageId,
                   "instance_type":instanceType,
                   "zone":zoneDc,
@@ -172,20 +215,23 @@ var server = http.createServer(function(req,res){
                   "access_key_id":access_key_id,   
                   "action":"RunInstances",            
                   "time_stamp":"2013-08-27T14:30:10Z"};
-	   	   		 res.write("Creating instances in progress");
+              
+                  
+	   	   		 res.write("Creating LG in progress");
 	   	   		 res.end(body);
-				 var myParameterCreateArr = [];   //used for Async loop 
-                 for (i=0; i<div;i++) {				 
-					 myParameterCreateArr.push(jsonObj[pathName]);
-					}
-                 myParameterCreateArr.push(modJsonIns);
-				 myParameterCreateArr.forEach(function(myParameterCreate){
+				     var myParameterCreateArr = [];   //used for Async loop 
+             for (i=0; i<div;i++) {				 
+					      myParameterCreateArr.push(jsonObj[pathName]);
+					   }
+             myParameterCreateArr.push(modJsonInsLG);
+				     myParameterCreateArr.forEach(function(myParameterCreate){
                  command2Qc.command2Qc(myParameterCreate,method,uri,secret,function(resObj){         	
                     });
-                 });  
- 
+             }); 
+             RSDone = false; 
+             }
 	   	   break;
-		   
+	   	  
 		   case "/create_eip" : 
 			  var modJsonEip =  
 				  {"count":mod,
@@ -223,7 +269,7 @@ var server = http.createServer(function(req,res){
 	         fs.writeFileSync(__dirname+'/instanceid.log',"");   //create an empty or clear the existing log
 	         }
 	         resObj.instance_set.forEach(function(InsObj){
-	   	     if (InsObj.instance_name === "twLG" && InsObj.status === "running" ) {
+	   	     if ((InsObj.instance_name === "twLG" || InsObj.instance_name === "twRS" ) && InsObj.status === "running" ) {
 	   		     InsArr.push(InsObj.instance_id);
 	   		     fs.appendFileSync(__dirname+'/instanceid.log',InsObj.instance_id+',');
 	   	     }	  
@@ -246,7 +292,7 @@ var server = http.createServer(function(req,res){
             	fs.writeFileSync(__dirname+'/eipaddr.log',""); 
             	}
             	   resObj.eip_set.forEach(function(eipObj){
-            		  if (eipObj.eip_name === "twEIP" && (eipObj.status === "available" | eipObj.status === "associated")) {
+            		  if (eipObj.eip_name === "twEIP" && (eipObj.status === "available" || eipObj.status === "associated")) {
             			  eipArr.push(eipObj.eip_addr);
             			  fs.appendFileSync(__dirname+'/eipid.log',eipObj.eip_id+','); 
             	          fs.appendFileSync(__dirname+'/eipaddr.log',eipObj.eip_addr+','); 
