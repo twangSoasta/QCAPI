@@ -265,19 +265,26 @@ var server = http.createServer(function(req,res){
              command2Qc.command2Qc(jsonObj[pathName],method,uri,secret,function(resObj){
 	         var InsSetLength = resObj.instance_set.length;
 	         var InsArr = [];
+	         var InsArrRS = [];  // separate array for RS list
 	         if (OVERWRITE_FILE) {
 	         fs.writeFileSync(__dirname+'/instanceid.log',"");   //create an empty or clear the existing log
 	         }
 	         resObj.instance_set.forEach(function(InsObj){
-	   	     if ((InsObj.instance_name === "twLG" || InsObj.instance_name === "twRS" ) && InsObj.status === "running" ) {
+	   	     if (InsObj.instance_name === "twLG" && InsObj.status === "running" ) {
 	   		     InsArr.push(InsObj.instance_id);
-	   		     fs.appendFileSync(__dirname+'/instanceid.log',InsObj.instance_id+',');
+	   	     }	  
+	         if (InsObj.instance_name === "twRS" && InsObj.status === "running" ) {
+	   		     InsArrRS.push(InsObj.instance_id);
 	   	     }	  
 	         });
-	         console.log("InsArr:\n",InsArr); 	
-             res.write("Total "+InsArr.length.toString()+ " instances created: "+InsArr.toString());
-             res.end(body);			 
-             });
+	         //make sure to write LG 1st and RS last in the list
+	         for (i in InsArr){fs.appendFileSync(__dirname+'/instanceid.log',InsArr[i]+',');}
+	         for (i in InsArrRS){fs.appendFileSync(__dirname+'/instanceid.log',InsArrRS[i]+',');}
+	         
+	         console.log("InsArr:\n",InsArr,"\nInsArrRS:\n",InsArrRS); 	
+           res.write("Total "+(InsArr.length + InsArrRS.length) + " instances created: "+InsArr.toString()+InsArrRS.toString());
+           res.end(body);			 
+           });
 		   
 		   break;
 		   
