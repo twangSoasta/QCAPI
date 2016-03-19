@@ -57,10 +57,10 @@ var body = '<html>'+
     '<input type="submit" value="Submit" style="height:20px;width:80px" />'+
     '</form>'+
     '<form action="/create_LG" method="post">'+           
-	  '<input type="submit" value="Create_LG" style="height:20px;width:120px;background:#FFC0CB" />'+
+	  '<input type="submit" value="Create_lg" style="height:20px;width:120px;background:#FFC0CB" />'+
     '</form>'+
 	  '<form action="/create_RS" method="post">'+           
-	  '<input type="submit" value="Create_RS" style="height:20px;width:120px;background:#FFC0CB" />'+
+	  '<input type="submit" value="Create_rs" style="height:20px;width:120px;background:#FFC0CB" />'+
     '</form>'+
 	'<form action="/create_eip" method="post">'+           
 	'<input type="submit" value="Create_eip" style="height:20px;width:120px;background:#FFC0CB" />'+
