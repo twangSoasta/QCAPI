@@ -140,7 +140,7 @@ var mainData = (i<lgNum)?"<Object type=\"server\" schemaVersion=\"8138\" name=\"
     '<Description></Description>\n'+
     '<Attributes>\n'+
       '<Attribute name="hostName">\n'+
-        '<Value>i-sz0scjan</Value>\n'+
+        '<Value>'+instanceId+'</Value>\n'+
       '</Attribute>\n'+
       '<Attribute name="address">\n'+
         '<Value null="true" />\n'+

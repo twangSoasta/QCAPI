@@ -27,7 +27,7 @@ var jsonObj = JSON.parse(json);
 var NUM,div,mod;
 var path = 'Beijing Qingcloud Loc #2';   //need a initial value to not break the generate routine if upload button has not clicked before
 var zoneDc = 'pek2';
-var RSDone = false;
+var LGDone = false;
 
 var body = '<html>'+                  
     '<head>'+
@@ -55,11 +55,11 @@ var body = '<html>'+
     '<textarea name="text" rows="2" cols="65">2,10,pek2,c4m8,img-1wbv1ydv,img-wska67bq,Beijing Qingcloud Loc #2</textarea>'+
     '<input type="submit" value="Submit" style="height:20px;width:80px" />'+
     '</form>'+
-	'<form action="/create_RS" method="post">'+           
-	'<input type="submit" value="Create_RS" style="height:20px;width:120px;background:#FFC0CB" />'+
+    '<form action="/create_LG" method="post">'+           
+	  '<input type="submit" value="Create_LG" style="height:20px;width:120px;background:#FFC0CB" />'+
     '</form>'+
-  '<form action="/create_LG" method="post">'+           
-	'<input type="submit" value="Create_LG" style="height:20px;width:120px;background:#FFC0CB" />'+
+	  '<form action="/create_RS" method="post">'+           
+	  '<input type="submit" value="Create_RS" style="height:20px;width:120px;background:#FFC0CB" />'+
     '</form>'+
 	'<form action="/create_eip" method="post">'+           
 	'<input type="submit" value="Create_eip" style="height:20px;width:120px;background:#FFC0CB" />'+
@@ -167,10 +167,46 @@ var server = http.createServer(function(req,res){
 	   	   		 res.end(body);   	   		
 	   	   break;
 	   	   
+	   	   case "/create_LG" : 
+	   	       console.log(mod+" "+numOfInstances+" "+eipBandwidth+" "+zoneDc+" "+instanceType+" "+imageId+" "+imageIdRS+" "+path);	
+		         modLG = mod - rsNum;
+		         console.log("modLG:"+modLG+"  "+"rsNum:"+rsNum); 	         
+		         var modJsonInsLG = 
+				         {"count":modLG,
+                  "image_id":imageId,
+                  "instance_type":instanceType,
+                  "zone":zoneDc,
+                  "instance_name":"twLG",
+                  "login_mode":"passwd",
+                  "login_passwd":"Soasta2006",
+                  "vxnets.1":"vxnet-0",
+                  "signature_version":1,                     
+                  "signature_method":"HmacSHA256",              
+                  "version":1,                              
+                  "access_key_id":access_key_id,   
+                  "action":"RunInstances",            
+                  "time_stamp":"2013-08-27T14:30:10Z"};
+                                
+	   	   		 res.write("Creating LG in progress");
+	   	   		 res.end(body);
+				     var myParameterCreateArr = [];   //used for Async loop 
+             for (i=0; i<div;i++) {				 
+					      myParameterCreateArr.push(jsonObj[pathName]);
+					   }
+             myParameterCreateArr.push(modJsonInsLG);
+				     myParameterCreateArr.forEach(function(myParameterCreate){
+                 command2Qc.command2Qc(myParameterCreate,method,uri,secret,function(resObj){         	
+                    });
+             }); 
+             LGDone = true; 
+          
+	   	   break;
+	   	   
 	   	   case "/create_RS":
-		        console.log(mod+" "+numOfInstances+" "+eipBandwidth+" "+zoneDc+" "+instanceType+" "+imageId+" "+imageIdRS+" "+path);	
-		        modLG = mod - rsNum;
-		        console.log("modLG:"+modLG+"  "+"rsNum:"+rsNum); 
+		        if (!LGDone) {
+		      	    res.write("Please go back and create LGs 1st!");
+		      	    res.end(body);
+		      	 } else {
 		        res.write("Creating RS in progress");
 	   	   	  res.end(body);
 		        var modJsonInsRS = 
@@ -190,47 +226,10 @@ var server = http.createServer(function(req,res){
                   "time_stamp":"2013-08-27T14:30:10Z"};
 		        command2Qc.command2Qc(modJsonInsRS,method,uri,secret,function(resObj){         	
                     });
-            RSDone = true;
-          
+            LGDone = false;
+            }
 		     break;
 	   	   	 
-	   	   case "/create_LG" : 
-		         
-		         if (!RSDone) {
-		      	    res.write("Please go back and create RSs 1st!");
-		      	    res.end(body);
-		      	 } else {
-		         var modJsonInsLG = 
-				         {"count":modLG,
-                  "image_id":imageId,
-                  "instance_type":instanceType,
-                  "zone":zoneDc,
-                  "instance_name":"twLG",
-                  "login_mode":"passwd",
-                  "login_passwd":"Soasta2006",
-                  "vxnets.1":"vxnet-0",
-                  "signature_version":1,                     
-                  "signature_method":"HmacSHA256",              
-                  "version":1,                              
-                  "access_key_id":access_key_id,   
-                  "action":"RunInstances",            
-                  "time_stamp":"2013-08-27T14:30:10Z"};
-              
-                  
-	   	   		 res.write("Creating LG in progress");
-	   	   		 res.end(body);
-				     var myParameterCreateArr = [];   //used for Async loop 
-             for (i=0; i<div;i++) {				 
-					      myParameterCreateArr.push(jsonObj[pathName]);
-					   }
-             myParameterCreateArr.push(modJsonInsLG);
-				     myParameterCreateArr.forEach(function(myParameterCreate){
-                 command2Qc.command2Qc(myParameterCreate,method,uri,secret,function(resObj){         	
-                    });
-             }); 
-             RSDone = false; 
-             }
-	   	   break;
 	   	  
 		   case "/create_eip" : 
 			  var modJsonEip =  
