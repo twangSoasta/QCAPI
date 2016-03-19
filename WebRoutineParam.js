@@ -24,6 +24,7 @@ const securityGroup = "sg-u279b2do";     //"sg-ewbcbab5";
 var currentDir = __dirname + "/parameter.json";
 var json = fs.readFileSync(currentDir).toString(); 
 var jsonObj = JSON.parse(json);
+for (i in jsonObj) {jsonObj[i].access_key_id = access_key_id;};	
 var NUM,div,mod;
 var path = 'Beijing Qingcloud Loc #2';   //need a initial value to not break the generate routine if upload button has not clicked before
 var zoneDc = 'pek2';
@@ -36,7 +37,7 @@ var body = '<html>'+
 	'<style type="text/css">'+
       'img{'+
          'position:absolute;'+
-         'left:400px;'+
+         'left:480px;'+
          'top:280px;'+
          '}'+
     '</style>'+
@@ -135,13 +136,10 @@ var server = http.createServer(function(req,res){
 		         //the following variables are global variables, can't use var here
              inputArr = finalTxt.split(',');
 		         numOfInstances = inputArr[0];
-             div51 = Math.floor(numOfInstances/51);
-             rsNum = div51 + 1;  
-             lgNum = numOfInstances - rsNum;
-             if ( (numOfInstances - 51*div51) == 1) {
-                numOfInstances++;
-                res.write("Invalid Number of LGs - 1, 52, 103, 154..., etc, will increase by 1<br \>");
-             	} 		         
+             div50 = Math.floor(numOfInstances/50);
+             mod50 = numOfInstances - div50*50;
+             rsNum = (mod50 == 0)? div50:div50+1;
+             	         
 				     //setting default values
 		         eipBandwidth = (inputArr[1] == undefined)?10:parseInt(inputArr[1]) ;
 		         zoneDc = (inputArr[2] == undefined)?'pek2':inputArr[2];
@@ -153,26 +151,24 @@ var server = http.createServer(function(req,res){
 				     console.log("path is: "+path);		 
 				     jsonObj['/create_LG'].instance_type = instanceType;
 				     jsonObj['/create_LG'].image_id = imageId;				 
-                 jsonObj['/create_eip'].bandwidth =eipBandwidth;
-                 for (i in jsonObj) {
-					jsonObj[i].zone = zoneDc;
-                 };				 
-                 NUM = parseInt(numOfInstances);	   //assuming upload will always happen before create
-				 div = Math.floor(NUM/10);
-                 mod = NUM - div*10;        
-				 console.log(NUM,div,mod);
+             jsonObj['/create_eip'].bandwidth =eipBandwidth;
+             for (i in jsonObj) {
+					      jsonObj[i].zone = zoneDc;
+             };				 
+             NUM = parseInt(numOfInstances);	   //assuming upload will always happen before create
+				     div = Math.floor(NUM/10);
+             mod = NUM - div*10;        
+				     console.log(NUM,div,mod);
 	   	   		 res.write("Creating "+numOfInstances+" LGs");
-				 var inputBoxStr = body.substring(body.indexOf('"65">')+5,body.lastIndexOf("</textarea>"));
-				 body = body.replace(inputBoxStr,numOfInstances+","+eipBandwidth+","+zoneDc+","+instanceType+","+imageId+","+imageIdRS+","+path);
+				     var inputBoxStr = body.substring(body.indexOf('"65">')+5,body.lastIndexOf("</textarea>"));
+				     body = body.replace(inputBoxStr,numOfInstances+","+eipBandwidth+","+zoneDc+","+instanceType+","+imageId+","+imageIdRS+","+path);
 	   	   		 res.end(body);   	   		
 	   	   break;
 	   	   
 	   	   case "/create_LG" : 
-	   	       console.log(mod+" "+numOfInstances+" "+eipBandwidth+" "+zoneDc+" "+instanceType+" "+imageId+" "+imageIdRS+" "+path);	
-		         modLG = mod - rsNum;
-		         console.log("modLG:"+modLG+"  "+"rsNum:"+rsNum); 	         
+	   	       console.log(mod+" "+numOfInstances+" "+eipBandwidth+" "+zoneDc+" "+instanceType+" "+imageId+" "+imageIdRS+" "+path);		         
 		         var modJsonInsLG = 
-				         {"count":modLG,
+				         {"count":mod,
                   "image_id":imageId,
                   "instance_type":instanceType,
                   "zone":zoneDc,
@@ -203,8 +199,9 @@ var server = http.createServer(function(req,res){
 	   	   break;
 	   	   
 	   	   case "/create_RS":
+	   	      console.log("rsNum: "+rsNum);
 		        if (!LGDone) {
-		      	    res.write("Please go back and create LGs 1st!");
+		      	    res.write("Needs LG number to determine RS number, please go back and create some LGs 1st!");
 		      	    res.end(body);
 		      	 } else {
 		        res.write("Creating RS in progress");
@@ -232,18 +229,22 @@ var server = http.createServer(function(req,res){
 	   	   	 
 	   	  
 		   case "/create_eip" : 
+		    NUM = parseInt(numOfInstances)+rsNum;	   //assuming upload will always happen before create
+			  div = Math.floor(NUM/10);
+        mod = NUM - div*10;        
+			  console.log("Eips number: "+NUM+" "+div+" "+mod);
 			  var modJsonEip =  
-				  {"count":mod,
-              	   "bandwidth":eipBandwidth,
-                   "billing_mode":"traffic",
-              	   "eip_name":"twEIP",
-                   "zone":zoneDc,
-                   "signature_version":1,                     
-                   "signature_method":"HmacSHA256",              
-                   "version":1,                              
-                   "access_key_id":access_key_id,   
-                   "action":"AllocateEips",            
-                   "time_stamp":"2013-08-27T14:30:10Z"};
+				   {"count":mod,
+            "bandwidth":eipBandwidth,
+            "billing_mode":"traffic",
+            "eip_name":"twEIP",
+            "zone":zoneDc,
+            "signature_version":1,                     
+            "signature_method":"HmacSHA256",              
+            "version":1,                              
+            "access_key_id":access_key_id,   
+            "action":"AllocateEips",            
+            "time_stamp":"2013-08-27T14:30:10Z"};
 	   	   	  res.write("Creating eips in progress");
 	   	   	  res.end(body);
                 var myParameterCreateArr = [];   //used for Async loop
@@ -281,7 +282,7 @@ var server = http.createServer(function(req,res){
 	         for (i in InsArrRS){fs.appendFileSync(__dirname+'/instanceid.log',InsArrRS[i]+',');}
 	         
 	         console.log("InsArr:\n",InsArr,"\nInsArrRS:\n",InsArrRS); 	
-           res.write("Total "+(InsArr.length + InsArrRS.length) + " instances created: "+InsArr.toString()+InsArrRS.toString());
+           res.write("Total "+(InsArr.length + InsArrRS.length) + " instances created: "+InsArr.toString()+"###"+InsArrRS.toString());
            res.end(body);			 
            });
 		   

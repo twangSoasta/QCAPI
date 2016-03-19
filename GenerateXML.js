@@ -61,10 +61,11 @@ fs.writeFileSync(__dirname+"/LG.xml",startData);
 fs.writeFileSync(__dirname+"/twMonServer.xml",startMonData);
 // 5, 4LG, 1RS     55, 53LG, 2RS, 155, 151LG,4RS   51 = 50 + 1  53 = 51 + 1 + 1(2RS) 104 = 101 + 2 + 1(3RS)
 // 1, 52, 103, 154 are not valid numbers, mod51 == 1 is not valid
-var totalServerNum = instanceIdArr.length-1;
-var div51 = Math.floor(totalServerNum/51);
-var rsNum = div51 + 1;  
-var lgNum = totalServerNum - rsNum;
+var totalServerNum = instanceIdArr.length -1;
+div51 = Math.floor(totalServerNum/51);
+mod51 = totalServerNum - div51*51
+rsNum = (mod51 == 0)? div51:div51+1;
+lgNum = totalServerNum - rsNum;
 console.log("Total Servers:"+totalServerNum+"  "+"LG:"+lgNum+"  "+"RS:"+rsNum);
 
 for (i=0; i< instanceIdArr.length-1; i++) {
