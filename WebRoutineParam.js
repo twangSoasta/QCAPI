@@ -13,7 +13,8 @@ var command2Qc = require('./QingcloudReq.js');
 var method = "GET";
 var uri = "/iaas/";
 var currentDir = __dirname; 
-currentDir = currentDir.substring(0,currentDir.lastIndexOf("/")) + "/files/access_key_soasta placeholder.csv";
+var slash = (process.platform == "win32")?"\\":"/";     //detect \ on windows or / on mac/linux
+currentDir = currentDir.substring(0,currentDir.lastIndexOf(slash)) + "/files/access_key_soasta placeholder.csv";
 var csv = fs.readFileSync(currentDir).toString();   //read key from default locations
 var access_key_id = csv.substring(csv.indexOf("id: '")+5,csv.indexOf("id: '")+25);
 var secret = csv.substring(csv.indexOf("key: '")+6,csv.indexOf("key: '")+46);
@@ -47,12 +48,12 @@ var body = '<html>'+
       'img{'+
          'position:absolute;'+
          'left:480px;'+
-         'top:280px;'+
+         'top:320px;'+
          '}'+
     '</style>'+
     '</head>'+
     '<body>'+  
-	'<h1>Welcome to use NodeJs Routine for Qingcloud API v1.1</h1>'+
+	'<h1>Welcome to use NodeJs Routine for Qingcloud API v1.2</h1>'+
 	'<form enctype="multipart/form-data" action="/UploadKeyCSV" method="post">'+
     '<input type="file" name ="upload" id="choosefile" /><br>'+
     '<input type="submit" value="UploadKeyCSV" id="submitBtn" />'+
@@ -199,29 +200,28 @@ var server = http.createServer(function(req,res){
                   "action":"RunInstances",            
                   "time_stamp":"2013-08-27T14:30:10Z"};
                                 
-	   	   		 res.write("Creating LG in progress");
-	   	   		 res.end(body);
+	   	   		 
 				     var myParameterCreateArr = [];   //used for Async loop 
              for (i=0; i<div;i++) {				 
 					      myParameterCreateArr.push(jsonObj[pathName]);
 					   }
              myParameterCreateArr.push(modJsonInsLG);
 				     myParameterCreateArr.forEach(function(myParameterCreate){
-                 command2Qc.command2Qc(myParameterCreate,method,uri,secret,function(resObj){         	
+                 command2Qc.command2Qc(myParameterCreate,method,uri,secret,function(resObj){ 
+				    res.write("Creating LG in progress<br />");
+                    res.write(resObj.status);	
+                    res.end(body);					
                     });
              }); 
              LGDone = true; 
-          
 	   	   break;
 	   	   
 	   	   case "/create_RS":
 	   	      console.log("rsNum: "+rsNum);
 		        if (!LGDone) {
 		      	    res.write("Needs LG number to determine RS number, please go back and create some LGs 1st!");
-		      	    res.end(body);
+					res.end(body);	
 		      	 } else {
-		        res.write("Creating RS in progress");
-	   	   	  res.end(body);
 		        var modJsonInsRS = 
 				         {"count":rsNum,
                   "image_id":imageIdRS,
@@ -237,7 +237,10 @@ var server = http.createServer(function(req,res){
                   "access_key_id":access_key_id,   
                   "action":"RunInstances",            
                   "time_stamp":"2013-08-27T14:30:10Z"};
-		        command2Qc.command2Qc(modJsonInsRS,method,uri,secret,function(resObj){         	
+		        command2Qc.command2Qc(modJsonInsRS,method,uri,secret,function(resObj){  
+				    res.write("Creating RS in progress<br />");
+                    res.write(resObj.status);	
+                    res.end(body);						
                     });
             LGDone = false;
             }
@@ -261,15 +264,16 @@ var server = http.createServer(function(req,res){
             "access_key_id":access_key_id,   
             "action":"AllocateEips",            
             "time_stamp":"2013-08-27T14:30:10Z"};
-	   	   	  res.write("Creating eips in progress");
-	   	   	  res.end(body);
                 var myParameterCreateArr = [];   //used for Async loop
                 for (i=0; i<div;i++) {
 					 myParameterCreateArr.push(jsonObj[pathName]);
 					}
 				 myParameterCreateArr.push(modJsonEip);
 				 myParameterCreateArr.forEach(function(myParameterCreate){
-                 command2Qc.command2Qc(myParameterCreate,method,uri,secret,function(resObj){      	
+                 command2Qc.command2Qc(myParameterCreate,method,uri,secret,function(resObj){   
+				    res.write("Creating eips in progress<br />");
+                    res.write(resObj.status);	
+                    res.end(body);					 
                   });
                  });  
            		   
@@ -277,10 +281,10 @@ var server = http.createServer(function(req,res){
 		   
 		   case "/describe_instance" : 
 		      
-	   	     res.write("describe instance =======> ");
              command2Qc.command2Qc(jsonObj[pathName],method,uri,secret,function(resObj){
+		   res.write("describe instance =======> ");
            if ( resObj.instance_set == undefined) {
-           	  res.write("API returns nothing, check your API keys!");
+           	  res.write("API returns nothing, check your API keys!<br />");
            	} else { 
 	         var InsSetLength = resObj.instance_set.length;
 	         var InsArr = [];
@@ -301,19 +305,20 @@ var server = http.createServer(function(req,res){
 	         for (i in InsArrRS){fs.appendFileSync(__dirname+'/instanceid.log',InsArrRS[i]+',');}
 	         
 	         console.log("InsArr:\n",InsArr,"\nInsArrRS:\n",InsArrRS); 	
-           res.write("Total "+(InsArr.length + InsArrRS.length) + " instances created: "+InsArr.toString()+"###"+InsArrRS.toString());
+           res.write("Total "+(InsArr.length + InsArrRS.length) + " instances created: "+InsArr.toString()+"###"+InsArrRS.toString()+"<br />");
            }
-           res.end(body);			 
+		   res.write(resObj.status);	
+           res.end(body);		 
            });
 		   
 		   break;
 		   
 		   case "/describe_eip" : 
 		      
-	   	      res.write("describe eip =======> ");
             command2Qc.command2Qc(jsonObj[pathName],method,uri,secret,function(resObj){
+		    res.write("describe eip =======> ");
             if ( resObj.eip_set == undefined) {
-           	  res.write("API returns nothing, check your API keys!");
+           	  res.write("API returns nothing, check your API keys!<br />");
            	} else { 
             	var eipSetLength = resObj.eip_set.length;
             	var eipArr = [];
@@ -329,17 +334,17 @@ var server = http.createServer(function(req,res){
             		  }	  
             	   });
             	   console.log("eipArr:\n",eipArr); 
-            	   res.write("Total "+eipArr.length.toString()+ " EIPs created: "+eipArr.toString());	
+            	   res.write("Total "+eipArr.length.toString()+ " EIPs created: "+eipArr.toString()+"<br />");	
             	}
-				    res.end(body);
+				    res.write(resObj.status);	
+                    res.end(body);
             });
 		   
 		   break;
 		   
-		   case "/associate_eip" : 
-		      
-	   	      res.write("associate eip");
-	   	      res.end(body);
+		   case "/associate_eip" :                //need to call the request in a loop, only invoke res.end once
+		      res.write("associate eip<br />");
+			  var once = true;
               var fileEipId = fs.readFileSync(__dirname+'/eipid.log').toString();
               var eipId = fileEipId.split(',');
               var fileInsId = fs.readFileSync(__dirname+'/instanceid.log').toString();
@@ -347,13 +352,18 @@ var server = http.createServer(function(req,res){
               console.log(eipId + "\n" + insId);
               if (eipId.length != insId.length) {
               	console.log("Error: EIP number:"+eipId.length," mismatches "+"INSTANCE number:"+insId.length);
+				res.end(body);
               } else {
               	for (i=0; i< eipId.length -1;i++){
               		console.log(i);
               		jsonObj[pathName].eip = eipId[i];
                     jsonObj[pathName].instance = insId[i];
               		command2Qc.command2Qc(jsonObj[pathName],method,uri,secret,function(resObj){
-              	
+						 if (once == true) {
+						 once = false;
+                         res.write(resObj.status);	
+                         res.end(body);    						 
+						 }
                          });
               	}
                }
@@ -362,8 +372,7 @@ var server = http.createServer(function(req,res){
 		   
 		   case "/stop_instance" : 
 		      
-	   	      res.write("Stopping instances");
-	   	      res.end(body);
+	   	      
               var fileInsId = fs.readFileSync(__dirname+'/instanceid.log').toString();
               var insId = fileInsId.split(',');
 			  var bodytxt ="";
@@ -373,15 +382,16 @@ var server = http.createServer(function(req,res){
               	}
               var paraQuery = querystring.stringify(jsonObj[pathName]) + bodytxt;
               var param = querystring.parse(paraQuery);           
-              command2Qc.command2Qc(param,method,uri,secret,function(resObj){             	
+              command2Qc.command2Qc(param,method,uri,secret,function(resObj){  
+			      res.write("Stopping instances<br />");
+                  res.write(resObj.status);	
+                  res.end(body);					  
               });
 
 		     break;
 		   
 		   case "/start_instance" : 
 		      
-	   	      res.write("Starting instances");
-	   	      res.end(body);
               var fileInsId = fs.readFileSync(__dirname+'/instanceid.log').toString();
               var insId = fileInsId.split(',');
 			  var bodytxt ="";
@@ -391,15 +401,16 @@ var server = http.createServer(function(req,res){
               	}
               var paraQuery = querystring.stringify(jsonObj[pathName]) + bodytxt;
               var param = querystring.parse(paraQuery);           
-              command2Qc.command2Qc(param,method,uri,secret,function(resObj){         	
+              command2Qc.command2Qc(param,method,uri,secret,function(resObj){  
+			      res.write("Starting instances<br />");
+                  res.write(resObj.status);	
+                  res.end(body);				  
               });
 
 		   break;
 		   
 		   case "/restart_instance" : 
 		      
-	   	      res.write("Restarting instances");
-	   	      res.end(body);
               var fileInsId = fs.readFileSync(__dirname+'/instanceid.log').toString();
               var insId = fileInsId.split(',');
 			  var bodytxt = "";
@@ -410,6 +421,9 @@ var server = http.createServer(function(req,res){
               var paraQuery = querystring.stringify(jsonObj[pathName]) + bodytxt;
               var param = querystring.parse(paraQuery);
               command2Qc.command2Qc(param,method,uri,secret,function(resObj){
+				  res.write("Restarting instances<br />");
+				  res.write(resObj.status);	
+                  res.end(body);	
               	
               });
               	   
@@ -417,8 +431,6 @@ var server = http.createServer(function(req,res){
 		   
 		   case "/dissociate_eip" : 
 		      
-	   	      res.write("dissociate eip");
-	   	      res.end(body);
               var fileEipId = fs.readFileSync(__dirname+'/eipid.log').toString();
               var eipId = fileEipId.split(',');
               var fileInsId = fs.readFileSync(__dirname+'/instanceid.log').toString();
@@ -434,7 +446,10 @@ var server = http.createServer(function(req,res){
               	}
               var paraQuery = querystring.stringify(jsonObj[pathName]) + bodytxt;
               var param = querystring.parse(paraQuery);
-              command2Qc.command2Qc(param,method,uri,secret,function(resObj){             
+              command2Qc.command2Qc(param,method,uri,secret,function(resObj){   
+			          res.write("dissociate eip<br />");
+                      res.write(resObj.status);	
+                      res.end(body);				  
                       });
                }
               		   
@@ -442,8 +457,6 @@ var server = http.createServer(function(req,res){
 		   
 		   case "/delete_instance" :
               
-	   	      res.write("delete instances");
-	   	      res.end(body);
               var fileInsId = fs.readFileSync(__dirname+'/instanceid.log').toString();
               var insId = fileInsId.split(',');
 			  var bodytxt ="";
@@ -453,15 +466,16 @@ var server = http.createServer(function(req,res){
               	}
               var paraQuery = querystring.stringify(jsonObj[pathName]) + bodytxt;
               var param = querystring.parse(paraQuery);              
-              command2Qc.command2Qc(param,method,uri,secret,function(resObj){           	
+              command2Qc.command2Qc(param,method,uri,secret,function(resObj){   
+			     res.write("delete instances<br />");
+                 res.write(resObj.status);	
+                 res.end(body);			  
               });	   
 		   
 		   break;
 		   
 		   case "/delete_eip" : 
 		      
-	   	      res.write("delete eips");
-	   	      res.end(body);
               var fileEipId = fs.readFileSync(__dirname+'/eipid.log').toString();
               var eipId = fileEipId.split(',');
               var fileInsId = fs.readFileSync(__dirname+'/instanceid.log').toString();
@@ -475,7 +489,10 @@ var server = http.createServer(function(req,res){
               }
               var paraQuery = querystring.stringify(jsonObj[pathName]) + bodytxt;
 			  var param = querystring.parse(paraQuery); 
-              command2Qc.command2Qc(param,method,uri,secret,function(resObj){            
+              command2Qc.command2Qc(param,method,uri,secret,function(resObj){  
+			      res.write("delete eips<br />");
+                  res.write(resObj.status);	
+                  res.end(body);				  
                       });
 		   
 		   break;
@@ -483,7 +500,7 @@ var server = http.createServer(function(req,res){
 		   case "/generate_xml" :
 		      generateXML.generateXML(path, zoneDc, securityGroup);   
 			  res.write("LG.xml and twMonServer.xml file generated");
-              res.end(body);  	
+			  res.end(body);
               var archive = new zip();	
               archive.addFiles([
 			  {name:"LG.xml",path:__dirname+"/LG.xml"},
@@ -500,7 +517,7 @@ var server = http.createServer(function(req,res){
 		   case "/archive.zip":
 		//      const gzip = zlib.createGzip();		
 	    	  var stats = fs.statSync(__dirname+"/archive.zip");  			  
-		//      res.writeHeader('Content-Length', stats["size"]);
+		      res.writeHeader('Content-Length', stats["size"]);
               res.writeHeader('Content-Type', mime.lookup(__dirname+"/archive.zip"));
               res.writeHeader('Content-Disposition', 'attachment; filename=archive.zip');
 			  var rd = fs.createReadStream(__dirname+"/archive.zip");		  
@@ -518,9 +535,9 @@ var server = http.createServer(function(req,res){
 		   break;
 		   
 	   	 default:	              
-			   res.write("You are hitting the default page"); 
+			 res.write("You are hitting the default page"); 
 	   		 res.write(body); 
-         res.end();			
+             res.end();			
 	   }
 	});
 

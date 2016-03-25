@@ -29,10 +29,12 @@ function command2Qc(myParameter,method,uri,secret,callback){
 	  res.on('end',function(){
 	     var dObj = JSON.parse(body);
 		 if (dObj.ret_code !== 0) {
-	        console.log("Error!response body is:\n"+JSON.stringify(dObj));
+	        console.log("Error! response body is:\n"+JSON.stringify(dObj));
+			dObj.status = "Error! response body is:\n"+JSON.stringify(dObj);
 		 }
 		 else {
 			 console.log("Response returns no error");
+			 dObj.status = "Response returns no error";
 		 }
 	     callback(dObj);
 	    });
