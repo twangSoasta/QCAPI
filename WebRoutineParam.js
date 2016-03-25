@@ -37,6 +37,7 @@ var instanceType = inputTextArr[3];
 var imageId = inputTextArr[4];
 var imageIdRS = inputTextArr[5];
 var path = inputTextArr[6];
+var rsNum = 1;
 
 var body = '<html>'+                  
     '<head>'+
@@ -58,7 +59,7 @@ var body = '<html>'+
     '</form><br />'+
 //	'MainAccount<input type="radio" checked="checked" name="csvPath" value="../files/access_key_soasta_main.csv" />'+
 //	'PeAccount<input type="radio" name="csvPath" value="../files/access_key_soasta.csv" /><br /><br />'+
-	'<u1>NumInstances,Bandwidth,ZoneName,InstanceType,ImageID,ServerListLocation</u1><hr/>'+
+	'<u1>NumInstances,Bandwidth,Zone,InstanceType,ImageIdLG,ImageIdRS,ServerListLocation</u1><hr/>'+
 	'<img src="http://www.soasta.com/wp-content/uploads/2015/05/cloudtest-pp-2.jpg" width="800" height="600"></div>'+
     '<form action="/upload" method="post">'+           
 //    '<textarea name="text" rows="2" cols="65">2,10,pek2,c4m8,img-1wbv1ydv,img-wska67bq,Beijing Qingcloud Loc #2</textarea>'+
@@ -277,6 +278,9 @@ var server = http.createServer(function(req,res){
 		      
 	   	     res.write("describe instance =======> ");
              command2Qc.command2Qc(jsonObj[pathName],method,uri,secret,function(resObj){
+           if ( resObj.instance_set == undefined) {
+           	  res.write("API returns nothing, check your API keys!");
+           	} else { 
 	         var InsSetLength = resObj.instance_set.length;
 	         var InsArr = [];
 	         var InsArrRS = [];  // separate array for RS list
@@ -297,6 +301,7 @@ var server = http.createServer(function(req,res){
 	         
 	         console.log("InsArr:\n",InsArr,"\nInsArrRS:\n",InsArrRS); 	
            res.write("Total "+(InsArr.length + InsArrRS.length) + " instances created: "+InsArr.toString()+"###"+InsArrRS.toString());
+           }
            res.end(body);			 
            });
 		   
@@ -306,6 +311,9 @@ var server = http.createServer(function(req,res){
 		      
 	   	      res.write("describe eip =======> ");
             command2Qc.command2Qc(jsonObj[pathName],method,uri,secret,function(resObj){
+            if ( resObj.eip_set == undefined) {
+           	  res.write("API returns nothing, check your API keys!");
+           	} else { 
             	var eipSetLength = resObj.eip_set.length;
             	var eipArr = [];
             	if (OVERWRITE_FILE){
@@ -321,7 +329,8 @@ var server = http.createServer(function(req,res){
             	   });
             	   console.log("eipArr:\n",eipArr); 
             	   res.write("Total "+eipArr.length.toString()+ " EIPs created: "+eipArr.toString());	
-				   res.end(body);
+            	}
+				    res.end(body);
             });
 		   
 		   break;
