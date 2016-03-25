@@ -13,7 +13,7 @@ var command2Qc = require('./QingcloudReq.js');
 var method = "GET";
 var uri = "/iaas/";
 var currentDir = __dirname; 
-currentDir = currentDir.substring(0,currentDir.lastIndexOf("/")) + "/files/access_key_soasta.csv";
+currentDir = currentDir.substring(0,currentDir.lastIndexOf("/")) + "/files/access_key_soasta placeholder.csv";
 var csv = fs.readFileSync(currentDir).toString();   //read key from default locations
 var access_key_id = csv.substring(csv.indexOf("id: '")+5,csv.indexOf("id: '")+25);
 var secret = csv.substring(csv.indexOf("key: '")+6,csv.indexOf("key: '")+46);
@@ -29,6 +29,14 @@ var NUM,div,mod;
 var path = 'Beijing Qingcloud Loc #2';   //need a initial value to not break the generate routine if upload button has not clicked before
 var zoneDc = 'pek2';
 var LGDone = false;
+var inputTextArr = fs.readFileSync(__dirname+"/inputtext.log").toString().split(",");    //inputtext.log is to store the default input value when start the program
+var numOfInstances = inputTextArr[0];
+var eipBandwidth = inputTextArr[1];
+var zoneDc = inputTextArr[2];
+var instanceType = inputTextArr[3];
+var imageId = inputTextArr[4];
+var imageIdRS = inputTextArr[5];
+var path = inputTextArr[6];
 
 var body = '<html>'+                  
     '<head>'+
@@ -53,7 +61,8 @@ var body = '<html>'+
 	'<u1>NumInstances,Bandwidth,ZoneName,InstanceType,ImageID,ServerListLocation</u1><hr/>'+
 	'<img src="http://www.soasta.com/wp-content/uploads/2015/05/cloudtest-pp-2.jpg" width="800" height="600"></div>'+
     '<form action="/upload" method="post">'+           
-    '<textarea name="text" rows="2" cols="65">2,10,pek2,c4m8,img-1wbv1ydv,img-wska67bq,Beijing Qingcloud Loc #2</textarea>'+
+//    '<textarea name="text" rows="2" cols="65">2,10,pek2,c4m8,img-1wbv1ydv,img-wska67bq,Beijing Qingcloud Loc #2</textarea>'+
+    '<textarea name="text" rows="2" cols="65">'+inputTextArr[0]+','+inputTextArr[1]+','+inputTextArr[2]+','+inputTextArr[3]+','+inputTextArr[4]+','+inputTextArr[5]+','+inputTextArr[6]+'</textarea>'+
     '<input type="submit" value="Submit" style="height:20px;width:80px" />'+
     '</form>'+
     '<form action="/create_LG" method="post">'+           
@@ -135,19 +144,23 @@ var server = http.createServer(function(req,res){
 	   	   case "/upload" : 
 		         //the following variables are global variables, can't use var here
              inputArr = finalTxt.split(',');
-		         numOfInstances = inputArr[0];
+		         numOfInstances = (inputArr[0] == null || inputArr[0] == '')?parseInt(inputTextArr[0]):parseInt(inputArr[0]);
              div50 = Math.floor(numOfInstances/50);
              mod50 = numOfInstances - div50*50;
              rsNum = (mod50 == 0)? div50:div50+1;
              	         
 				     //setting default values
-		         eipBandwidth = (inputArr[1] == undefined)?10:parseInt(inputArr[1]) ;
-		         zoneDc = (inputArr[2] == undefined)?'pek2':inputArr[2];
-		         instanceType = (inputArr[3] == undefined)?'c4m8':inputArr[3];
-		         imageId = (inputArr[4] == undefined)?'img-1wbv1ydv':inputArr[4];
-		         imageIdRS = (inputArr[5] == undefined)?'img-wska67bq':inputArr[5];
-             path = (inputArr[6] == undefined)?'Beijing Qingcloud Loc #2':inputArr[6];		
+		         eipBandwidth = (inputArr[1] == null || inputArr[1] == "")?parseInt(inputTextArr[1]):parseInt(inputArr[1]) ;
+		         zoneDc = (inputArr[2] == null || inputArr[2] == "")?inputTextArr[2]:inputArr[2];
+		         instanceType = (inputArr[3] == null || inputArr[3] == "")?inputTextArr[3]:inputArr[3];
+		         imageId = (inputArr[4] == null || inputArr[4] == "")?inputTextArr[4]:inputArr[4];
+		         imageIdRS = (inputArr[5] == null || inputArr[5] == "")?inputTextArr[5]:inputArr[5];
+             path = (inputArr[6] == null || inputArr[6] == "")?inputTextArr[6]:inputArr[6];		
              path = path.replace(/\+/g,' '); 
+             zoneDc = zoneDc.replace(/\+/g,' '); 
+             instanceType = instanceType.replace(/\+/g,' '); 
+             imageId = imageId.replace(/\+/g,' '); 
+             imageIdRS = imageIdRS.replace(/\+/g,' '); 
 				     console.log("path is: "+path);		 
 				     jsonObj['/create_LG'].instance_type = instanceType;
 				     jsonObj['/create_LG'].image_id = imageId;				 
@@ -162,6 +175,7 @@ var server = http.createServer(function(req,res){
 	   	   		 res.write("Creating "+numOfInstances+" LGs");
 				     var inputBoxStr = body.substring(body.indexOf('"65">')+5,body.lastIndexOf("</textarea>"));
 				     body = body.replace(inputBoxStr,numOfInstances+","+eipBandwidth+","+zoneDc+","+instanceType+","+imageId+","+imageIdRS+","+path);
+				     fs.writeFileSync(__dirname + "/inputtext.log",numOfInstances+','+eipBandwidth+','+zoneDc+','+instanceType+','+imageId+','+imageIdRS+','+path);   //every submit save for the default input text next time start the program
 	   	   		 res.end(body);   	   		
 	   	   break;
 	   	   
@@ -487,8 +501,8 @@ var server = http.createServer(function(req,res){
 		   
 	   	   default:	              
 			   res.write("You are hitting the default page"); 
-	   		   res.write(body); 
-               res.end();			
+	   		 res.write(body); 
+         res.end();			
 	   }
 	});
 
