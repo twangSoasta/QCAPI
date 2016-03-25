@@ -61,16 +61,26 @@ fs.writeFileSync(__dirname+"/LG.xml",startData);
 fs.writeFileSync(__dirname+"/twMonServer.xml",startMonData);
 // 5, 4LG, 1RS     55, 53LG, 2RS, 155, 151LG,4RS   51 = 50 + 1  53 = 51 + 1 + 1(2RS) 104 = 101 + 2 + 1(3RS)
 // 1, 52, 103, 154 are not valid numbers, mod51 == 1 is not valid
-var totalServerNum = instanceIdArr.length-1;
-var div51 = Math.floor(totalServerNum/51);
-var rsNum = div51 + 1;  
-var lgNum = totalServerNum - rsNum;
+var totalServerNum = instanceIdArr.length -1;
+div51 = Math.floor(totalServerNum/51);
+mod51 = totalServerNum - div51*51
+rsNum = (mod51 == 0)? div51:div51+1;
+lgNum = totalServerNum - rsNum;
 console.log("Total Servers:"+totalServerNum+"  "+"LG:"+lgNum+"  "+"RS:"+rsNum);
 
 for (i=0; i< instanceIdArr.length-1; i++) {
+var j;
 instanceId = instanceIdArr[i];
 eip = eipArr[i];
-var j = (i<lgNum)?1:j++;
+
+if (i<=lgNum){
+   j=1;
+   if (i == lgNum) {
+   	console.log("The following is RS");
+   	}
+   }else{
+   	j++;
+   }
 console.log("id:",instanceId+"  "+"eip:"+eip);
 var mainData = (i<lgNum)?"<Object type=\"server\" schemaVersion=\"8138\" name=\""+"twLG"+ (i+1) +"\" path=\"" +PATH+ "\">\n<Body>\n<Server xmlns=\"http://www.soasta.com/services/repository\">\n<Options />\n<Maestro>\n<Settings>\n<Setting name=\"Pool.MaxWorkerCount\" value=\"8192\" />\n<Setting name=\"RSClient.DistributeAmongResultServers\" value=\"true\" />\n<Setting name=\"ServerType\" value=\"Load\" />\n</Settings>\n<Contact url=\"http://" + instanceId + ":8080/concerto/services/hessian/Maestro\" urlOutsideLocation=\"http://" + eip + ":8080/concerto/services/hessian/Maestro\" />\n</Maestro>\n<Monitor>\n<Settings>\n<Setting name=\"ServerType\" value=\"Slave\" />\n</Settings>\n<Contact url=\"http://" + instanceId+ ":8080/concerto/services/hessian/MonitorService\" urlOutsideLocation=\"http://" + eip + ":8080/concerto/services/hessian/MonitorService\" />\n</Monitor>\n<CloudProviderAccountRef>cparef</CloudProviderAccountRef>\n<CloudInfo>\n<Provider>QINGCLOUD</Provider>\n<ServerClassName>QingCloud Test Server (Large)</ServerClassName>\n<Region>"+ REGION+ "</Region>\n<VendorID>i-f9kxa98l</VendorID>\n<SecurityGroup>" + securityGroup +"</SecurityGroup>\n<PublicHostName>"+ eip +"</PublicHostName>\n</CloudInfo>\n</Server>\n</Body>\n<BinaryData />\n<Description></Description>\n<Attributes>\n<Attribute name=\"hostName\">\n<Value>" +instanceId+ "</Value>\n</Attribute>\n<Attribute name=\"address\">\n<Value null=\"true\" />\n</Attribute>\n<Attribute name=\"state\">\n<Value>RUNNING</Value>\n</Attribute>\n<Attribute name=\"cloudServerStatisticsId\">\n<Value>0c13c1a2-a4b6-45ff-b52d-82cd2a8a5ac9</Value>\n</Attribute>\n<Attribute name=\"cloudServer\">\n<Value>true</Value>\n</Attribute>\n<Attribute name=\"authKey\">\n<Value>UUgp+cJFW+NbFeo0SOExlokJWE6tIMppgshTLUksNew1WoNZWo5v/g==</Value>\n</Attribute>\n</Attributes>\n</Object>\n"
                         :'<Object type="server" schemaVersion="8138" name="twRS' + (j) + '" path="'+PATH+'">\n'+
