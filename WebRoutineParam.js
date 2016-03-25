@@ -145,6 +145,7 @@ var server = http.createServer(function(req,res){
 	   	   case "/upload" : 
 		         //the following variables are global variables, can't use var here
              inputArr = finalTxt.split(',');
+             console.log(inputArr);
 		         numOfInstances = (inputArr[0] == null || inputArr[0] == '')?parseInt(inputTextArr[0]):parseInt(inputArr[0]);
              div50 = Math.floor(numOfInstances/50);
              mod50 = numOfInstances - div50*50;
@@ -507,8 +508,16 @@ var server = http.createServer(function(req,res){
 			  
 		   break;
 		   
+		   case "/default":
+		       inputTextArr = fs.readFileSync(__dirname+"/inputtextdefault.log").toString().split(","); 
+		       res.write("Loading the default input text");
+		       var inputBoxStr = body.substring(body.indexOf('"65">')+5,body.lastIndexOf("</textarea>"));
+				   body = body.replace(inputBoxStr,inputTextArr[0]+','+inputTextArr[1]+','+inputTextArr[2]+','+inputTextArr[3]+','+inputTextArr[4]+','+inputTextArr[5]+','+inputTextArr[6]);
+		       res.write(body);
+		       res.end();
+		   break;
 		   
-	   	   default:	              
+	   	 default:	              
 			   res.write("You are hitting the default page"); 
 	   		 res.write(body); 
          res.end();			
