@@ -1,3 +1,12 @@
+/**************************************************************************************************************************************************************
+Author: Tony Wang
+Title:  WebRoutineParam.js
+Description: Interactive API for Qingcloud
+Revision History:
+--1.2 fully funcitonal as of 04/15/2016
+--1.3 Tony Fixed LG creation issue when it is 10(additional 0 count request submitted), added logonce logic for create LG/EIPchange descitbe eip as available ones only for now
+
+***************************************************************************************************************************************************************/
 var http = require('http');
 var fs = require('fs');
 var url = require('url');
@@ -53,7 +62,7 @@ var body = '<html>'+
     '</style>'+
     '</head>'+
     '<body>'+  
-	'<h1>Welcome to use NodeJs Routine for Qingcloud API v1.2</h1>'+
+	'<h1>Welcome to use NodeJs Routine for Qingcloud API v1.3</h1>'+
 	'<form enctype="multipart/form-data" action="/UploadKeyCSV" method="post">'+
     '<input type="file" name ="upload" id="choosefile" /><br>'+
     '<input type="submit" value="UploadKeyCSV" id="submitBtn" />'+
@@ -183,7 +192,8 @@ var server = http.createServer(function(req,res){
 	   	   break;
 	   	   
 	   	   case "/create_LG" : 
-	   	       console.log(mod+" "+numOfInstances+" "+eipBandwidth+" "+zoneDc+" "+instanceType+" "+imageId+" "+imageIdRS+" "+path);		         
+	   	       console.log(mod+" "+numOfInstances+" "+eipBandwidth+" "+zoneDc+" "+instanceType+" "+imageId+" "+imageIdRS+" "+path);	
+	   	       var logonce = true;	         
 		         var modJsonInsLG = 
 				         {"count":mod,
                   "image_id":imageId,
@@ -205,12 +215,17 @@ var server = http.createServer(function(req,res){
              for (i=0; i<div;i++) {				 
 					      myParameterCreateArr.push(jsonObj[pathName]);
 					   }
+					   if (mod !== 0) {
              myParameterCreateArr.push(modJsonInsLG);
+             }
 				     myParameterCreateArr.forEach(function(myParameterCreate){
                  command2Qc.command2Qc(myParameterCreate,method,uri,secret,function(resObj){ 
+                 	if (logonce) {
 				    res.write("Creating LG in progress<br />");
                     res.write(resObj.status);	
-                    res.end(body);					
+                    res.end(body);
+                    logonce = false;
+                  } 				
                     });
              }); 
              LGDone = true; 
@@ -252,6 +267,7 @@ var server = http.createServer(function(req,res){
 			  div = Math.floor(NUM/10);
         mod = NUM - div*10;        
 			  console.log("Eips number: "+NUM+" "+div+" "+mod);
+			  var logonce = true;
 			  var modJsonEip =  
 				   {"count":mod,
             "bandwidth":eipBandwidth,
@@ -268,12 +284,17 @@ var server = http.createServer(function(req,res){
                 for (i=0; i<div;i++) {
 					 myParameterCreateArr.push(jsonObj[pathName]);
 					}
+				if (mod !== 0) {
 				 myParameterCreateArr.push(modJsonEip);
+				}
 				 myParameterCreateArr.forEach(function(myParameterCreate){
-                 command2Qc.command2Qc(myParameterCreate,method,uri,secret,function(resObj){   
+                 command2Qc.command2Qc(myParameterCreate,method,uri,secret,function(resObj){  
+                 	if (logonce) { 
 				    res.write("Creating eips in progress<br />");
                     res.write(resObj.status);	
-                    res.end(body);					 
+                    res.end(body);	
+                    logonce = false;
+                  }				 
                   });
                  });  
            		   
@@ -327,7 +348,8 @@ var server = http.createServer(function(req,res){
             	fs.writeFileSync(__dirname+'/eipaddr.log',""); 
             	}
             	   resObj.eip_set.forEach(function(eipObj){
-            		  if (eipObj.eip_name === "twEIP" && (eipObj.status === "available" || eipObj.status === "associated")) {
+            //		  if (eipObj.eip_name === "twEIP" && (eipObj.status === "available" || eipObj.status === "associated")) {
+                 if (eipObj.eip_name === "twEIP" && eipObj.status === "available") {
             			  eipArr.push(eipObj.eip_addr);
             			  fs.appendFileSync(__dirname+'/eipid.log',eipObj.eip_id+','); 
             	          fs.appendFileSync(__dirname+'/eipaddr.log',eipObj.eip_addr+','); 
@@ -344,7 +366,7 @@ var server = http.createServer(function(req,res){
 		   
 		   case "/associate_eip" :                //need to call the request in a loop, only invoke res.end once
 		      res.write("associate eip<br />");
-			  var once = true;
+			  var logonce = true;
               var fileEipId = fs.readFileSync(__dirname+'/eipid.log').toString();
               var eipId = fileEipId.split(',');
               var fileInsId = fs.readFileSync(__dirname+'/instanceid.log').toString();
@@ -359,8 +381,8 @@ var server = http.createServer(function(req,res){
               		jsonObj[pathName].eip = eipId[i];
                     jsonObj[pathName].instance = insId[i];
               		command2Qc.command2Qc(jsonObj[pathName],method,uri,secret,function(resObj){
-						 if (once == true) {
-						 once = false;
+						 if (logonce) {
+						             logonce = false;
                          res.write(resObj.status);	
                          res.end(body);    						 
 						 }
