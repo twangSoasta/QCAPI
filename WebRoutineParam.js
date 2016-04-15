@@ -4,7 +4,8 @@ Title:  WebRoutineParam.js
 Description: Interactive API for Qingcloud
 Revision History:
 --1.2 fully funcitonal as of 04/15/2016
---1.3 Tony Fixed LG creation issue when it is 10(additional 0 count request submitted), added logonce logic for create LG/EIPchange descitbe eip as available ones only for now
+--1.3 Tony Fixed LG creation issue when it is 10(additional 0 count request submitted), added logonce logic for create LG/EIPchange descitbe eip as available
+      ones only for now, added logics to add nameSuffix after LG/RS/EIP name to differentiate main/subaccount operations
 
 ***************************************************************************************************************************************************************/
 var http = require('http');
@@ -48,6 +49,7 @@ var imageId = inputTextArr[4];
 var imageIdRS = inputTextArr[5];
 var path = inputTextArr[6];
 var rsNum = 1;
+var nameSuffix ='defaultname';
 
 var body = '<html>'+                  
     '<head>'+
@@ -144,8 +146,12 @@ var server = http.createServer(function(req,res){
 				 } else {
 		         access_key_id = finalTxt.substring(finalTxt.indexOf("id: '")+5,finalTxt.indexOf("id: '")+25);
              secret = finalTxt.substring(finalTxt.indexOf("key: '")+6,finalTxt.indexOf("key: '")+46);
+			 nameSuffix = "_"+access_key_id.substring(0,3);   //used to differentiate different LG/EIP for different user accounts for describe funtions. 
+			 console.log(nameSuffix);
 				 for (i in jsonObj) {
 	                jsonObj[i].access_key_id = access_key_id;
+					jsonObj[i].instance_name = "twLG"+nameSuffix;
+					jsonObj[i].eip_name = "twEIP"+nameSuffix;
                  };	
 				 res.write("Credential loaded!");
 				 }
@@ -199,7 +205,7 @@ var server = http.createServer(function(req,res){
                   "image_id":imageId,
                   "instance_type":instanceType,
                   "zone":zoneDc,
-                  "instance_name":"twLG",
+                  "instance_name":"twLG"+nameSuffix,
                   "login_mode":"passwd",
                   "login_passwd":"Soasta2006",
                   "vxnets.1":"vxnet-0",
@@ -242,7 +248,7 @@ var server = http.createServer(function(req,res){
                   "image_id":imageIdRS,
                   "instance_type":instanceType,
                   "zone":zoneDc,
-                  "instance_name":"twRS",
+                  "instance_name":"twRS"+nameSuffix,
                   "login_mode":"passwd",
                   "login_passwd":"Soasta2006",
                   "vxnets.1":"vxnet-0",
@@ -272,7 +278,7 @@ var server = http.createServer(function(req,res){
 				   {"count":mod,
             "bandwidth":eipBandwidth,
             "billing_mode":"traffic",
-            "eip_name":"twEIP",
+            "eip_name":"twEIP"+nameSuffix,
             "zone":zoneDc,
             "signature_version":1,                     
             "signature_method":"HmacSHA256",              
@@ -314,10 +320,10 @@ var server = http.createServer(function(req,res){
 	         fs.writeFileSync(__dirname+'/instanceid.log',"");   //create an empty or clear the existing log
 	         }
 	         resObj.instance_set.forEach(function(InsObj){
-	   	     if (InsObj.instance_name === "twLG" && InsObj.status === "running" ) {
+	   	     if (InsObj.instance_name === ("twLG"+nameSuffix) && InsObj.status === "running" ) {
 	   		     InsArr.push(InsObj.instance_id);
 	   	     }	  
-	         if (InsObj.instance_name === "twRS" && InsObj.status === "running" ) {
+	         if (InsObj.instance_name === ("twRS"+nameSuffix) && InsObj.status === "running" ) {
 	   		     InsArrRS.push(InsObj.instance_id);
 	   	     }	  
 	         });
@@ -348,8 +354,8 @@ var server = http.createServer(function(req,res){
             	fs.writeFileSync(__dirname+'/eipaddr.log',""); 
             	}
             	   resObj.eip_set.forEach(function(eipObj){
-            //		  if (eipObj.eip_name === "twEIP" && (eipObj.status === "available" || eipObj.status === "associated")) {
-                 if (eipObj.eip_name === "twEIP" && eipObj.status === "available") {
+            //		  if (eipObj.eip_name === ("twEIP"+nameSuffix) && (eipObj.status === "available" || eipObj.status === "associated")) {
+                 if (eipObj.eip_name === ("twEIP"+nameSuffix) && eipObj.status === "available") {
             			  eipArr.push(eipObj.eip_addr);
             			  fs.appendFileSync(__dirname+'/eipid.log',eipObj.eip_id+','); 
             	          fs.appendFileSync(__dirname+'/eipaddr.log',eipObj.eip_addr+','); 
