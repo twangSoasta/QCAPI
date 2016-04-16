@@ -6,6 +6,7 @@ Revision History:
 --1.2 fully funcitonal as of 04/15/2016
 --1.3 Tony Fixed LG creation issue when it is 10(additional 0 count request submitted), added logonce logic for create LG/EIPchange descitbe eip as available
       ones only for now, added logics to add nameSuffix after LG/RS/EIP name to differentiate main/subaccount operations
+	  added logics to avoid overwrite instance.log, eipArr.log, eipId.log when the returned list are empty
 
 ***************************************************************************************************************************************************************/
 var http = require('http');
@@ -316,9 +317,6 @@ var server = http.createServer(function(req,res){
 	         var InsSetLength = resObj.instance_set.length;
 	         var InsArr = [];
 	         var InsArrRS = [];  // separate array for RS list
-	         if (OVERWRITE_FILE) {
-	         fs.writeFileSync(__dirname+'/instanceid.log',"");   //create an empty or clear the existing log
-	         }
 	         resObj.instance_set.forEach(function(InsObj){
 	   	     if (InsObj.instance_name === ("twLG"+nameSuffix) && InsObj.status === "running" ) {
 	   		     InsArr.push(InsObj.instance_id);
@@ -327,9 +325,16 @@ var server = http.createServer(function(req,res){
 	   		     InsArrRS.push(InsObj.instance_id);
 	   	     }	  
 	         });
+			 if (OVERWRITE_FILE && InsArr.length>0 && InsArrRS.length>0 ) {
+	         fs.writeFileSync(__dirname+'/instanceid.log',"");   //create an empty or clear the existing log
+	         }
 	         //make sure to write LG 1st and RS last in the list
-	         for (i in InsArr){fs.appendFileSync(__dirname+'/instanceid.log',InsArr[i]+',');}
+			 if (InsArr.length>0) {
+	            for (i in InsArr){fs.appendFileSync(__dirname+'/instanceid.log',InsArr[i]+',');}
+			 }
+			 if (InsArrRS.length>0) {
 	         for (i in InsArrRS){fs.appendFileSync(__dirname+'/instanceid.log',InsArrRS[i]+',');}
+			 }
 	         
 	         console.log("InsArr:\n",InsArr,"\nInsArrRS:\n",InsArrRS); 	
            res.write("Total "+(InsArr.length + InsArrRS.length) + " instances created: "+InsArr.toString()+"###"+InsArrRS.toString()+"<br />");
@@ -347,22 +352,37 @@ var server = http.createServer(function(req,res){
             if ( resObj.eip_set == undefined) {
            	  res.write("API returns nothing, check your API keys!<br />");
            	} else { 
-            	var eipSetLength = resObj.eip_set.length;
             	var eipArr = [];
-            	if (OVERWRITE_FILE){
+				var eipId = [];
+            	if (OVERWRITE_FILE && resObj.eip_set.eip !== undefined){
             	fs.writeFileSync(__dirname+'/eipid.log',""); 
             	fs.writeFileSync(__dirname+'/eipaddr.log',""); 
             	}
-            	   resObj.eip_set.forEach(function(eipObj){
+            	resObj.eip_set.forEach(function(eipObj){
             //		  if (eipObj.eip_name === ("twEIP"+nameSuffix) && (eipObj.status === "available" || eipObj.status === "associated")) {
                  if (eipObj.eip_name === ("twEIP"+nameSuffix) && eipObj.status === "available") {
             			  eipArr.push(eipObj.eip_addr);
-            			  fs.appendFileSync(__dirname+'/eipid.log',eipObj.eip_id+','); 
-            	          fs.appendFileSync(__dirname+'/eipaddr.log',eipObj.eip_addr+','); 
+						  eipId.push(eipObj.eip_id);           			  
             		  }	  
-            	   });
-            	   console.log("eipArr:\n",eipArr); 
-            	   res.write("Total "+eipArr.length.toString()+ " EIPs created: "+eipArr.toString()+"<br />");	
+            	});
+				if (OVERWRITE_FILE && eipArr.length>0 && eipId.length>0){
+            	   fs.writeFileSync(__dirname+'/eipid.log',""); 
+            	   fs.writeFileSync(__dirname+'/eipaddr.log',""); 
+            	}
+				
+				if (eipArr.length>0){
+					for (i in eipArr) {
+					   fs.appendFileSync(__dirname+'/eipaddr.log',eipArr[i]+',');	
+					}
+				}
+				if (eipId.length>0){
+					for (i in eipId) {
+					   fs.appendFileSync(__dirname+'/eipid.log',eipId[i]+',');	
+					}
+				}
+				   
+            	console.log("eipArr:\n",eipArr); 
+            	res.write("Total "+eipArr.length.toString()+ " EIPs created: "+eipArr.toString()+"<br />");	
             	}
 				    res.write(resObj.status);	
                     res.end(body);
