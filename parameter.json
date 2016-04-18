@@ -124,6 +124,17 @@
                  "access_key_id": null,   
                  "action": "ReleaseEips",            
                  "time_stamp": "2013-08-27T14:30:10Z"    
-              } 
+              },
+             
+"/check_job":{
+                 "zone":"pek2",
+                 "job_action":"RunInstances",
+                 "signature_version":1,                     
+                 "signature_method":"HmacSHA256",              
+                 "version":1,                              
+                 "access_key_id":null,   
+                 "action":"DescribeJobs",            
+                 "time_stamp":"2013-08-27T14:30:10Z"
+             }			  
 
 }

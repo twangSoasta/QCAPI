@@ -7,6 +7,7 @@ Revision History:
 --1.3 Tony Fixed LG creation issue when it is 10(additional 0 count request submitted), added logonce logic for create LG/EIPchange descitbe eip as available
       ones only for now, added logics to add nameSuffix after LG/RS/EIP name to differentiate main/subaccount operations
 	  added logics to avoid overwrite instance.log, eipArr.log, eipId.log when the returned list are empty
+--1.4 Added DescribeJob Button to check job status, 5 seconds polling interval until all of the pending job are done
 
 ***************************************************************************************************************************************************************/
 var http = require('http');
@@ -15,6 +16,7 @@ var url = require('url');
 var zlib = require('zlib');
 var zip = require('node-native-zip');
 var mime = require('mime');
+var deasync = require('deasync');
 //var formidable = require('formidable');
 var generateXML = require('./GenerateXML.js');
 var host = "0.0.0.0";
@@ -51,6 +53,7 @@ var imageIdRS = inputTextArr[5];
 var path = inputTextArr[6];
 var rsNum = 1;
 var nameSuffix ='defaultname';
+var lastJob = "RunInstances";
 
 var body = '<html>'+                  
     '<head>'+
@@ -65,7 +68,7 @@ var body = '<html>'+
     '</style>'+
     '</head>'+
     '<body>'+  
-	'<h1>Welcome to use NodeJs Routine for Qingcloud API v1.3</h1>'+
+	'<h1>Welcome to use NodeJs Routine for Qingcloud API v1.4</h1>'+
 	'<form enctype="multipart/form-data" action="/UploadKeyCSV" method="post">'+
     '<input type="file" name ="upload" id="choosefile" /><br>'+
     '<input type="submit" value="UploadKeyCSV" id="submitBtn" />'+
@@ -80,7 +83,10 @@ var body = '<html>'+
     '<input type="submit" value="Submit" style="height:20px;width:80px" />'+
     '</form>'+
     '<form action="/create_LG" method="post">'+           
-	  '<input type="submit" value="Create_lg" style="height:20px;width:120px;background:#FFC0CB" />'+
+	  '<input type="submit" value="Create_lg" style="height:20px;width:120px;background:#FFC0CB" >'+
+    '</form>'+
+	'<form action="/check_job" method="post">'+           
+	  '<input type="submit" value="Check_job" style="height:40px;width:120px;position:fixed;top:310px;left:310px;background:#FFC0CB" />'+
     '</form>'+
 	  '<form action="/create_RS" method="post">'+           
 	  '<input type="submit" value="Create_rs" style="height:20px;width:120px;background:#FFC0CB" />'+
@@ -236,6 +242,7 @@ var server = http.createServer(function(req,res){
                     });
              }); 
              LGDone = true; 
+			 lastJob = "RunInstances";
 	   	   break;
 	   	   
 	   	   case "/create_RS":
@@ -266,6 +273,7 @@ var server = http.createServer(function(req,res){
                     });
             LGDone = false;
             }
+			lastJob = "RunInstances";
 		     break;
 	   	   	 
 	   	  
@@ -304,7 +312,7 @@ var server = http.createServer(function(req,res){
                   }				 
                   });
                  });  
-           		   
+           	 lastJob = "AllocateEips";	   
 		   break;
 		   
 		   case "/describe_instance" : 
@@ -325,7 +333,7 @@ var server = http.createServer(function(req,res){
 	   		     InsArrRS.push(InsObj.instance_id);
 	   	     }	  
 	         });
-			 if (OVERWRITE_FILE && InsArr.length>0 && InsArrRS.length>0 ) {
+			 if (OVERWRITE_FILE && (InsArr.length>0 || InsArrRS.length>0 )) {
 	         fs.writeFileSync(__dirname+'/instanceid.log',"");   //create an empty or clear the existing log
 	         }
 	         //make sure to write LG 1st and RS last in the list
@@ -342,7 +350,7 @@ var server = http.createServer(function(req,res){
 		   res.write(resObj.status);	
            res.end(body);		 
            });
-		   
+		   lastJob = "DescribeInstances";
 		   break;
 		   
 		   case "/describe_eip" : 
@@ -387,7 +395,7 @@ var server = http.createServer(function(req,res){
 				    res.write(resObj.status);	
                     res.end(body);
             });
-		   
+		      lastJob = "DescribeEips";
 		   break;
 		   
 		   case "/associate_eip" :                //need to call the request in a loop, only invoke res.end once
@@ -415,12 +423,11 @@ var server = http.createServer(function(req,res){
                          });
               	}
                }
-		   
+		      lastJob = "AssociateEip";
 		   break;
 		   
 		   case "/stop_instance" : 
-		      
-	   	      
+		         	      
               var fileInsId = fs.readFileSync(__dirname+'/instanceid.log').toString();
               var insId = fileInsId.split(',');
 			  var bodytxt ="";
@@ -435,7 +442,7 @@ var server = http.createServer(function(req,res){
                   res.write(resObj.status);	
                   res.end(body);					  
               });
-
+              lastJob = "StopInstances";
 		     break;
 		   
 		   case "/start_instance" : 
@@ -454,7 +461,7 @@ var server = http.createServer(function(req,res){
                   res.write(resObj.status);	
                   res.end(body);				  
               });
-
+              lastJob = "StartInstances";
 		   break;
 		   
 		   case "/restart_instance" : 
@@ -474,7 +481,7 @@ var server = http.createServer(function(req,res){
                   res.end(body);	
               	
               });
-              	   
+              lastJob = "RestartInstances"; 	   
 		   break;
 		   
 		   case "/dissociate_eip" : 
@@ -500,7 +507,7 @@ var server = http.createServer(function(req,res){
                       res.end(body);				  
                       });
                }
-              		   
+              lastJob = "DissociateEips";    		   
 		   break;
 		   
 		   case "/delete_instance" :
@@ -519,7 +526,7 @@ var server = http.createServer(function(req,res){
                  res.write(resObj.status);	
                  res.end(body);			  
               });	   
-		   
+		      lastJob = "TerminateInstances"; 
 		   break;
 		   
 		   case "/delete_eip" : 
@@ -542,7 +549,7 @@ var server = http.createServer(function(req,res){
                   res.write(resObj.status);	
                   res.end(body);				  
                       });
-		   
+		      lastJob = "ReleaseEips";
 		   break;
 		   
 		   case "/generate_xml" :
@@ -573,6 +580,40 @@ var server = http.createServer(function(req,res){
 			  
 		   break;
 		   
+		   case "/check_job":
+		      var jobDone = false;
+			  var isReturn = false;
+			  var allDone = true;
+			  jsonObj[pathName].job_action = lastJob;
+			  console.log("Chcek Job...");
+			  res.write("Checking Job Status: "+lastJob+"<br />");  			  
+			  while (!jobDone){
+				     isReturn = false;
+					 allDone = true;    //every iteration reset the initial value
+                     command2Qc.command2Qc(jsonObj[pathName],method,uri,secret,function(resObj){
+                     	console.log("Polling..."); 
+						resObj.job_set.forEach(function(job){
+						   if(job.job_action == lastJob && job.status !== "successful"){
+						      allDone = false; 
+							  console.log(job.job_id+" is not done!");
+						   }
+						});
+                        if (allDone) {
+                        	jobDone = true; 	
+							res.write("Job Done!!!");
+							isReturn = true;  //if alldone exit right away
+							res.end(body);
+                        	}
+						sleep(5000);      // polling need pacing or the API quota will be exceeded
+						isReturn = true;  //can do next command2Qc now     						
+                  	 });
+                  	 while(!isReturn){
+                      deasync.runLoopOnce();
+                     }
+					 console.log(jobDone);         	 
+                  }	 
+		   break;
+		   
 		   case "/default":
 		       inputTextArr = fs.readFileSync(__dirname+"/inputtextdefault.log").toString().split(","); 
 		       res.write("Loading the default input text");
@@ -594,3 +635,7 @@ var server = http.createServer(function(req,res){
 server.listen(port,host,function(){
 	console.log("Listening on ",host,":",port);
 });
+
+function sleep(sleepTime) {
+    for(var start = +new Date; +new Date - start <= sleepTime; ) {} 
+}
