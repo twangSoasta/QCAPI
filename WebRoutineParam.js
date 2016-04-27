@@ -8,6 +8,7 @@ Revision History:
       ones only for now, added logics to add nameSuffix after LG/RS/EIP name to differentiate main/subaccount operations
 	  added logics to avoid overwrite instance.log, eipArr.log, eipId.log when the returned list are empty
 --1.4 Added DescribeJob Button to check job status, 5 seconds polling interval until all of the pending job are done
+      Differentiate Server XML name by appending region for multiple locations
 
 ***************************************************************************************************************************************************************/
 var http = require('http');
