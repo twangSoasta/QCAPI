@@ -9,6 +9,8 @@ Revision History:
 	  added logics to avoid overwrite instance.log, eipArr.log, eipId.log when the returned list are empty
 --1.4 Added DescribeJob Button to check job status, 5 seconds polling interval until all of the pending job are done
       Differentiate Server XML name by appending region for multiple locations
+--1.5 Adding zoneDC name to twmonserver.xml and generate an alias copy of twmon.xml
+      adding bandwidth adjustment button
 
 ***************************************************************************************************************************************************************/
 var http = require('http');
@@ -69,7 +71,7 @@ var body = '<html>'+
     '</style>'+
     '</head>'+
     '<body>'+  
-	'<h1>Welcome to use NodeJs Routine for Qingcloud API v1.4</h1>'+
+	'<h1>Welcome to use NodeJs Routine for Qingcloud API v1.5</h1>'+
 	'<form enctype="multipart/form-data" action="/UploadKeyCSV" method="post">'+
     '<input type="file" name ="upload" id="choosefile" /><br>'+
     '<input type="submit" value="UploadKeyCSV" id="submitBtn" />'+
@@ -554,14 +556,14 @@ var server = http.createServer(function(req,res){
 		   break;
 		   
 		   case "/generate_xml" :
-		      generateXML.generateXML(path, zoneDc, securityGroup);   
+		    generateXML.generateXML(path, zoneDc, securityGroup);   
 			  res.write("LG.xml and twMonServer.xml file generated");
 			  res.end(body);
-              var archive = new zip();	
-              archive.addFiles([
-			  {name:"LG.xml",path:__dirname+"/LG.xml"},
-			  {name:"twMonServer.xml",path:__dirname+"/twMonServer.xml"},
-			  {name:"twLGMon.xml",path:__dirname+"/twLGMon.xml"}			  
+        var archive = new zip();	
+        archive.addFiles([
+			  {name:"LG"+zoneDc+".xml",path:__dirname+"/LG"+zoneDc+".xml"},
+			  {name:"twMonServer"+zoneDc+".xml",path:__dirname+"/twMonServer"+zoneDc+".xml"},
+			  {name:"twLGMon"+zoneDc+".xml",path:__dirname+"/twLGMon"+zoneDc+".xml"}			  
 			  ],function(err){
 				if (err) return console.log(err);  
 				var buff = archive.toBuffer();
