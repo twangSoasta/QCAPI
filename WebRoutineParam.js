@@ -115,6 +115,9 @@ var body = '<html>'+
 	'<form action="/restart_instance" method="post">'+           
 	'<input type="submit" value="Restart_instance" style="height:20px;width:120px;background:#EECFA1" />'+
     '</form>'+
+	'<form action="/change_bandwidth" method="post">'+           
+	'<input type="submit" value="Change_bandwidth" style="height:20px;width:120px;background:#EECFA1" />'+
+    '</form>'+
 	'<form action="/dissociate_eip" method="post">'+           
 	'<input type="submit" value="Dissociate_eip" style="height:20px;width:120px;background:#A2B5CD" />'+
     '</form>'+
@@ -160,9 +163,9 @@ var server = http.createServer(function(req,res){
 			 console.log(nameSuffix);
 				 for (i in jsonObj) {
 	                jsonObj[i].access_key_id = access_key_id;
-					jsonObj[i].instance_name = "twLG"+nameSuffix;
-					jsonObj[i].eip_name = "twEIP"+nameSuffix;
                  };	
+				 jsonObj['/create_LG'].instance_name = "twLG"+nameSuffix;
+				 jsonObj['/create_eip'].eip_name = "twEIP"+nameSuffix;
 				 res.write("Credential loaded!");
 				 }
 				 res.end(body);
@@ -195,7 +198,7 @@ var server = http.createServer(function(req,res){
              jsonObj['/create_eip'].bandwidth =eipBandwidth;
              for (i in jsonObj) {
 					      jsonObj[i].zone = zoneDc;
-             };				 
+             };			 
              NUM = parseInt(numOfInstances);	   //assuming upload will always happen before create
 				     div = Math.floor(NUM/10);
              mod = NUM - div*10;        
@@ -536,10 +539,6 @@ var server = http.createServer(function(req,res){
 		      
               var fileEipId = fs.readFileSync(__dirname+'/eipid.log').toString();
               var eipId = fileEipId.split(',');
-              var fileInsId = fs.readFileSync(__dirname+'/instanceid.log').toString();
-              var insId = fileInsId.split(',');	
-              
-              
               var bodytxt ="";
               for (i=0; i< eipId.length -1;i++){
               	var newName = ("eips."+ (i+1)).toString();   
@@ -553,6 +552,26 @@ var server = http.createServer(function(req,res){
                   res.end(body);				  
                       });
 		      lastJob = "ReleaseEips";
+		   break;
+		   
+		    case "/change_bandwidth" : 
+		      
+              var fileEipId = fs.readFileSync(__dirname+'/eipid.log').toString();
+              var eipId = fileEipId.split(',');
+              var bodytxt ="";
+              for (i=0; i< eipId.length -1;i++){
+              	var newName = ("eips."+ (i+1)).toString();   
+              	bodytxt += "&" + newName + "=" + eipId[i].toString(); 
+              }
+			  bodytxt += "&bandwidth="+eipBandwidth;
+              var paraQuery = querystring.stringify(jsonObj[pathName]) + bodytxt;
+			  var param = querystring.parse(paraQuery); 
+              command2Qc.command2Qc(param,method,uri,secret,function(resObj){  
+			      res.write("Change eip bandwdith<br />");
+                  res.write(resObj.status);	
+                  res.end(body);				  
+                      });
+		      lastJob = "ChangeEipsBandwidth";
 		   break;
 		   
 		   case "/generate_xml" :

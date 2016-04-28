@@ -125,6 +125,15 @@
                  "action": "ReleaseEips",            
                  "time_stamp": "2013-08-27T14:30:10Z"    
               },
+"/change_bandwidth":{
+                 "zone": "pek2",
+                 "signature_version": "1",                     
+                 "signature_method": "HmacSHA256",              
+                 "version":"1",                              
+                 "access_key_id": null,   
+                 "action": "ChangeEipsBandwidth",            
+                 "time_stamp": "2013-08-27T14:30:10Z"    
+              },
              
 "/check_job":{
                  "zone":"pek2",
